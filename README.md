@@ -9,8 +9,7 @@ Description du projet : Un calendrier en ligne gratuit pour planifier toutes vos
 Membres de l’équipe : Adrien DEMAGNY, Hadrien TOURNES, Kevin NAGELS, Thomas SELVA, Yefan GUO
 
 
-
-1. Synthèse du sujet posé et analyse
+<b>1. Synthèse du sujet posé et analyse</b>
 
 Le sujet posé consiste à réaliser une application web répondant à un besoin spécifique, le domaine ainsi que le design de l’application sont libres. Notre application devra comporter au moins une base de données. 
 
@@ -32,7 +31,7 @@ Pour conclure, nous pouvons donc résumer le problème auquel nous souhaitons r�
 - Gestion des rendez-vous (de la planification à la réalisation)
 - Rappel des événements importants
 
-2. Synthèse du travail de conception
+<b>2. Synthèse du travail de conception</b>
 
 
 Nous allons maintenant évoquer les différentes solutions aux sous-problèmes. Pour commencer, pour répondre au premier sous-problème, la solution est assez simple, en effet, il nous suffit de créer une interface de calendrier qui a été évoquée précédemment.
@@ -48,7 +47,7 @@ Pour le dernier sous-problème, l’utilisateur recevra des notifications push v
 Etant donné que toutes ces solutions s’assemblent parfaitement sous la forme d’un calendrier en ligne, c’est ce que nous souhaitons mettre en place, comme dit dans les paragraphes précédents.
 
 
-3. Présentation de la feuille de route projet
+<b>3. Présentation de la feuille de route projet</b>
 
 
 Nous avons trois lignes de développement : le frontend qui gère le calendrier, le backend au niveau de la gestion des comptes ainsi que de la sauvegarde des calendriers associés aux comptes, et enfin le backend avec l’envoi automatique des notifications par mail.
@@ -78,7 +77,7 @@ Pour le sprint 3 : déploiement en ligne, finition des fonctionnalités.
 Au vu de la durée relativement courte du projet, au vu des impératifs nombreux de l’équipe et au vu des sprint très réguliers, nous ne ferons pas de points d'avance particuliers.
 
 
-4. Présentation des objectifs du prototype initial
+<b>4. Présentation des objectifs du prototype initial</b>
 
 - Nous allons commencer par lister les fonctionnalités les plus essentielles : 
 - Nous devons avoir la possibilité de créer un compte

@@ -1,18 +1,8 @@
 <template>
     <div>
-        <h1>Hi {{account.user.firstName}}!</h1>
+        <h1>Hi {{account.user.email}}!</h1>
         <p>You're logged in with Vue + Vuex & JWT!!</p>
-        <h3>Users from secure api end point:</h3>
-        <em v-if="users.loading">Loading users...</em>
-        <span v-if="users.error" class="text-danger">ERROR: {{users.error}}</span>
-        <ul v-if="users.items">
-            <li v-for="user in users.items" :key="user.id">
-                {{user.email}}
-                <span v-if="user.deleting"><em> - Deleting...</em></span>
-                <span v-else-if="user.deleteError" class="text-danger"> - ERROR: {{user.deleteError}}</span>
-                <span v-else> - <a @click="deleteUser(user.id)" class="text-danger">Delete</a></span>
-            </li>
-        </ul>
+        
         <p>
             <router-link to="/login">Logout</router-link>
         </p>
@@ -20,23 +10,37 @@
 </template>
 
 <script>
+/* 
+<h3>Users from secure api end point:</h3>
+    <em v-if="users.loading">Loading users...</em>
+    <span v-if="users.error" class="text-danger">ERROR: {{users.error}}</span>
+    <ul v-if="users.items">
+        <li v-for="user in users.items" :key="user.id">
+            {{user.email}}
+            <span v-if="user.deleting"><em> - Deleting...</em></span>
+            <span v-else-if="user.deleteError" class="text-danger"> - ERROR: {{user.deleteError}}</span>
+            <span v-else> - <a @click="deleteUser(user.id)" class="text-danger">Delete</a></span>
+        </li>
+    </ul>
+*/
+
 import { mapState, mapActions } from 'vuex'
 
 export default {
     computed: {
         ...mapState({
             account: state => state.account,
-            users: state => state.users.all
+            //users: state => state.users.all
         })
     },
     created () {
-        this.getAllUsers();
+        //this.getAllUsers();
     },
     methods: {
-        ...mapActions('users', {
+        /*...mapActions('users', {
             getAllUsers: 'getAll',
             deleteUser: 'delete'
-        })
+        })*/
     }
 };
 </script>

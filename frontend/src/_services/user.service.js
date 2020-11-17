@@ -5,10 +5,10 @@ export const userService = {
     login,
     logout,
     register,
-    getAll,
-    getById,
-    update,
-    delete: _delete
+    //getAll,
+    //getById,
+    //update,
+    //delete: _delete
 };
 
 /*
@@ -21,7 +21,7 @@ function login(email, password) {
         body: JSON.stringify({ email, password })
     };
 
-    return fetch(`${config.apiUrl}/users/authenticate`, requestOptions)
+    return fetch(`${config.apiUrl}/user/login`, requestOptions)
         .then(handleResponse)
         .then(user => {
             // login successful if there's a jwt token in the response
@@ -46,9 +46,10 @@ function register(user) {
         body: JSON.stringify(user)
     };
 
-    return fetch(`${config.apiUrl}/users/register`, requestOptions).then(handleResponse);
+    return fetch(`${config.apiUrl}/user/register`, requestOptions).then(handleResponse);
 }
 
+/*
 function getAll() {
     const requestOptions = {
         method: 'GET',
@@ -57,7 +58,6 @@ function getAll() {
 
     return fetch(`${config.apiUrl}/users`, requestOptions).then(handleResponse);
 }
-
 
 function getById(id) {
     const requestOptions = {
@@ -87,6 +87,7 @@ function _delete(id) {
 
     return fetch(`${config.apiUrl}/users/${id}`, requestOptions).then(handleResponse);
 }
+*/
 
 function handleResponse(response) {
     return response.text().then(text => {

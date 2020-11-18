@@ -9,7 +9,8 @@ const { user, password, database, options } = config.db;
 const sequelize = new Sequelize(database, user, password, options);
 
 let models = [
-    require('../models/user.model.js')
+    require('../models/user.model.js'),
+    require('../models/event.model.js')
 ]
 
 // Initialize models

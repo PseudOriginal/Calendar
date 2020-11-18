@@ -2,7 +2,7 @@ const { DataTypes } = require('sequelize');
 
 module.exports = function users(sequelize) {
     return sequelize.define(
-        'User', 
+        'Event', 
         // attributes
         {
             start_date: {

@@ -1,9 +1,12 @@
-//require('rootpath')();
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('./_middleware/error-handler');
 const userRoutes =  require('./routes/user.route');
+
+// Loading environment variables
+const dotenv = require('dotenv');
+dotenv.config();
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: false }));

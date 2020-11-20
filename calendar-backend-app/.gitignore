@@ -1,2 +1,8 @@
 node_modules
 .vscode
+
+# Default configuration file
+config.yml
+
+# Set environment variables
+.env

@@ -1,6 +1,6 @@
 const { DataTypes } = require('sequelize');
 
-module.exports = function users(sequelize) {
+module.exports = function events(sequelize) {
     return sequelize.define(
         'Event', 
         // attributes

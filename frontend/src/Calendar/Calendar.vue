@@ -1,5 +1,6 @@
 <template>
-	<div id="app">
+	<div>
+        <div id="app">
 		<h1>Mon calendrier</h1>
 		<calendar-view
 			:show-date="showDate"
@@ -10,6 +11,11 @@
 				:header-props="t.headerProps"
 				@input="setShowDate" />
 		</calendar-view>
+        <br>
+        <p>
+            <router-link to="/">Back to home page</router-link>
+        </p>
+        </div>
 	</div>
 </template>
 <script>

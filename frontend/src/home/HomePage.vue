@@ -2,7 +2,9 @@
     <div>
         <h1>Hi {{account.user.email}}!</h1>
         <p>You're logged in with Vue + Vuex & JWT!!</p>
-        
+        <p>
+            <router-link to="/calendar">My Calendar</router-link>
+        </p>
         <p>
             <router-link to="/login">Logout</router-link>
         </p>

@@ -6,6 +6,7 @@ const eventService = require('../services/event.service');
 
 const router = express.Router();
 router.post('/create', authorize(), createSchema, createService);
+router.get('/getEvents', authorize(), getEventsSchema, getEventsService);
 
 module.exports = router;
 
@@ -14,14 +15,27 @@ function createSchema(req, res, next) {
         start_date: Joi.date().required(),
         end_date: Joi.date().required(),
         title : Joi.string().required(),
-        description : Joi.string().allow(''),
-        email: Joi.string().email().required()
+        description : Joi.string().allow('')
+    });
+    validateRequest(req, next, schema);
+}
+
+function getEventsSchema(req, res, next) {
+    const schema = Joi.object({
+        start_date: Joi.date().required(),
+        end_date: Joi.date().required()
     });
     validateRequest(req, next, schema);
 }
 
 function createService(req, res, next) {
-    eventService.create(req.body)
+    eventService.create(req.body, req.user.email)
         .then(event => res.json(event))
+        .catch(next);
+}
+
+function getEventsService(req, res, next) {
+    eventService.getEvents(req.body, req.user.email)
+        .then(events => res.json(events))
         .catch(next);
 }

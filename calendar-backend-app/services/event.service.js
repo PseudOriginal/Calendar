@@ -4,12 +4,13 @@ const db = require('../_helpers/db');
 const { Op } = require("sequelize");
 
 module.exports = {
-    create,
+    createEvent,
     getEvents,
-    modifyEvent
+    modifyEvent,
+    deleteEvent
 }
 
-async function create({ start_date, end_date, title, description }, email) {
+async function createEvent({ start_date, end_date, title, description }, email) {
     let event = new db.Event({start_date: start_date, end_date: end_date, title: title, description: description, email: email});
 
     if(event = await event.save())
@@ -33,7 +34,8 @@ async function getEvents({ start_date, end_date}, email) {
 async function modifyEvent({ id, start_date, end_date, title, description }, email) {
     let event = await db.Event.findOne({
         where: {
-            id: id
+            id: id,
+            email: email
         } 
     });
 
@@ -41,9 +43,21 @@ async function modifyEvent({ id, start_date, end_date, title, description }, ema
     event.end_date = end_date;
     event.title = title;
     event.description = description;
-    event.email = email;
     
     if (await event.save())
         return event;
     return null;
+}
+
+async function deleteEvent({ id }, email) {
+    let event = await db.Event.findOne({
+        where: {
+            id: id,
+            email: email
+        } 
+    });
+
+    if(await event.destroy())
+        return true;
+    return false;
 }

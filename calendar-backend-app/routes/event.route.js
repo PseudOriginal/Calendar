@@ -5,13 +5,14 @@ const authorize = require('../_middleware/authorize');
 const eventService = require('../services/event.service');
 
 const router = express.Router();
-router.post('/create', authorize(), createSchema, createService);
+router.post('/createEvent', authorize(), createEventSchema, createEventService);
 router.get('/getEvents', authorize(), getEventsSchema, getEventsService);
 router.post('/modifyEvent', authorize(), modifyEventSchema, modifyEventService);
+router.post('/deleteEvent', authorize(), deleteEventSchema, deleteEventService);
 
 module.exports = router;
 
-function createSchema(req, res, next) {
+function createEventSchema(req, res, next) {
     const schema = Joi.object({
         start_date: Joi.date().required(),
         end_date: Joi.date().required(),
@@ -40,8 +41,15 @@ function modifyEventSchema(req, res, next) {
     validateRequest(req, next, schema);
 }
 
-function createService(req, res, next) {
-    eventService.create(req.body, req.user.email)
+function deleteEventSchema(req, res, next) {
+    const schema = Joi.object({
+        id: Joi.number().required()
+    });
+    validateRequest(req, next, schema);
+}
+
+function createEventService(req, res, next) {
+    eventService.createEvent(req.body, req.user.email)
         .then(event => res.json(event))
         .catch(next);
 }
@@ -55,5 +63,11 @@ function getEventsService(req, res, next) {
 function modifyEventService(req, res, next) {
     eventService.modifyEvent(req.body, req.user.email)
         .then(event => res.json(event))
+        .catch(next);
+}
+
+function deleteEventService(req, res, next) {
+    eventService.deleteEvent(req.body, req.user.email)
+        .then(deleted => res.json(deleted))
         .catch(next);
 }

@@ -3,6 +3,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const errorHandler = require('./_middleware/error-handler');
 const userRoutes =  require('./routes/user.route');
+const eventRoutes =  require('./routes/event.route');
 
 // Loading environment variables
 const dotenv = require('dotenv');
@@ -16,6 +17,7 @@ app.use(cors());
 // API routes
 app.get('/', (req, res) => res.send('Hello World!'))
 app.use('/user', userRoutes); 
+app.use('/event', eventRoutes); 
 
 // Global error handler
 app.use(errorHandler);

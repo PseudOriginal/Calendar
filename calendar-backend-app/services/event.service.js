@@ -1,20 +1,63 @@
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const db = require('../_helpers/db');
+const { Op } = require("sequelize");
 
 module.exports = {
-    //login
+    createEvent,
+    getEvents,
+    modifyEvent,
+    deleteEvent
 }
 
-/*example :
-async function login({ email, password }) {
-    const user = await db.User.scope('withHashPassword').findOne({ where: { email } });
+async function createEvent({ start_date, end_date, title, description }, email) {
+    let event = new db.Event({start_date: start_date, end_date: end_date, title: title, description: description, email: email});
 
-    if (!user || !(await bcrypt.compare(password, user.password)))
-        throw 'Email and/or password is incorrect!!';
+    if(event = await event.save())
+        return event;
+    return null;
+}
+
+async function getEvents({ start_date, end_date}, email) {
+    const events = await db.Event.findAll({
+        where:{
+            email: email,
+            start_date:{
+                [Op.between]: [start_date, end_date]
+            }
+        }
+    });
+
+    return events;
+}
+
+async function modifyEvent({ id, start_date, end_date, title, description }, email) {
+    let event = await db.Event.findOne({
+        where: {
+            id: id,
+            email: email
+        } 
+    });
+
+    event.start_date = start_date;
+    event.end_date = end_date;
+    event.title = title;
+    event.description = description;
     
-        // Authentication successful
-        const token = jwt.sign({ sub: user.email }, config.secret, { expiresIn: '2h' });
-        return { ...omitHash(user.get()), token };
+    if (await event.save())
+        return event;
+    return null;
 }
-*/
+
+async function deleteEvent({ id }, email) {
+    let event = await db.Event.findOne({
+        where: {
+            id: id,
+            email: email
+        } 
+    });
+
+    if(await event.destroy())
+        return true;
+    return false;
+}

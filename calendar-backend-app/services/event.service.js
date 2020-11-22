@@ -5,7 +5,8 @@ const { Op } = require("sequelize");
 
 module.exports = {
     create,
-    getEvents
+    getEvents,
+    modifyEvent
 }
 
 async function create({ start_date, end_date, title, description }, email) {
@@ -17,7 +18,7 @@ async function create({ start_date, end_date, title, description }, email) {
 }
 
 async function getEvents({ start_date, end_date}, email) {
-    const events = db.Event.findAll({
+    const events = await db.Event.findAll({
         where:{
             email: email,
             start_date:{
@@ -27,4 +28,22 @@ async function getEvents({ start_date, end_date}, email) {
     });
 
     return events;
+}
+
+async function modifyEvent({ id, start_date, end_date, title, description }, email) {
+    let event = await db.Event.findOne({
+        where: {
+            id: id
+        } 
+    });
+
+    event.start_date = start_date;
+    event.end_date = end_date;
+    event.title = title;
+    event.description = description;
+    event.email = email;
+    
+    if (await event.save())
+        return event;
+    return null;
 }

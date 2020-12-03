@@ -5,11 +5,11 @@ module.exports = function events(sequelize) {
         'Event', 
         // attributes
         {
-            start_date: {
+            startDate: {
                 type: DataTypes.DATE,
                 allowNull: false
             },
-            end_date: {
+            endDate: {
                 type: DataTypes.DATE,
                 allowNull: false
             },

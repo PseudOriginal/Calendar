@@ -10,20 +10,20 @@ module.exports = {
     deleteEvent
 }
 
-async function createEvent({ start_date, end_date, title, description }, email) {
-    let event = new db.Event({start_date: start_date, end_date: end_date, title: title, description: description, email: email});
+async function createEvent({ startDate, endDate, title, description }, email) {
+    let event = new db.Event({startDate: startDate, endDate: endDate, title: title, description: description, email: email});
 
     if(event = await event.save())
         return event;
     return null;
 }
 
-async function getEvents({ start_date, end_date}, email) {
+async function getEvents({ startDate, endDate}, email) {
     const events = await db.Event.findAll({
         where:{
             email: email,
-            start_date:{
-                [Op.between]: [start_date, end_date]
+            startDate:{
+                [Op.between]: [startDate, endDate]
             }
         }
     });
@@ -31,7 +31,7 @@ async function getEvents({ start_date, end_date}, email) {
     return events;
 }
 
-async function modifyEvent({ id, start_date, end_date, title, description }, email) {
+async function modifyEvent({ id, startDate, endDate, title, description }, email) {
     let event = await db.Event.findOne({
         where: {
             id: id,
@@ -39,8 +39,8 @@ async function modifyEvent({ id, start_date, end_date, title, description }, ema
         } 
     });
 
-    event.start_date = start_date;
-    event.end_date = end_date;
+    event.startDate = startDate;
+    event.endDate = endDate;
     event.title = title;
     event.description = description;
     

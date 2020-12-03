@@ -17,6 +17,8 @@ app.use(cors());
 // API routes
 app.get('/', (req, res) => res.send('Hello World!'))
 app.use('/user', (req, res, next)=>{
+    console.log(req.query)
+    console.log(':')
     console.log(JSON.stringify(req.headers))
     console.log('-------------------------')
     console.log(JSON.stringify(req.body))
@@ -24,6 +26,8 @@ app.use('/user', (req, res, next)=>{
     next()
 }, userRoutes); 
 app.use('/event', (req, res, next)=>{
+    console.log(req.query)
+    console.log(':')
     console.log(JSON.stringify(req.headers))
     console.log('-------------------------')
     console.log(JSON.stringify(req.body))

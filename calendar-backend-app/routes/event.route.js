@@ -14,8 +14,8 @@ module.exports = router;
 
 function createEventSchema(req, res, next) {
     const schema = Joi.object({
-        start_date: Joi.date().required(),
-        end_date: Joi.date().required(),
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required(),
         title : Joi.string().required(),
         description : Joi.string().allow('')
     });
@@ -24,17 +24,24 @@ function createEventSchema(req, res, next) {
 
 function getEventsSchema(req, res, next) {
     const schema = Joi.object({
-        start_date: Joi.date().required(),
-        end_date: Joi.date().required()
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required()
     });
-    validateRequest(req, next, schema);
+    const { error, value } = schema.validate(req.query);
+    
+    if (error) {
+        next(`Validation error: ${error.details.map(x => x.message).join(', ')}`);
+    } else {
+        req.quary = value;
+        next();
+    }
 }
 
 function modifyEventSchema(req, res, next) {
     const schema = Joi.object({
         id: Joi.number().required(),
-        start_date: Joi.date().required(),
-        end_date: Joi.date().required(),
+        startDate: Joi.date().required(),
+        endDate: Joi.date().required(),
         title : Joi.string().required(),
         description : Joi.string().allow('')
     });
@@ -55,7 +62,7 @@ function createEventService(req, res, next) {
 }
 
 function getEventsService(req, res, next) {
-    eventService.getEvents(req.body, req.user.email)
+    eventService.getEvents(req.query, req.user.email)
         .then(events => res.json(events))
         .catch(next);
 }

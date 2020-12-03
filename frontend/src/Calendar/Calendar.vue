@@ -68,9 +68,23 @@
 				</div>
 
 				<div class="field">
+					<label class="label">Start time</label>
+					<div class="control">
+						<input v-model="newItemStartTime" class="input" type="time" />
+					</div>
+				</div>
+
+				<div class="field">
 					<label class="label">End date</label>
 					<div class="control">
 						<input v-model="newItemEndDate" class="input" type="date" />
+					</div>
+				</div>
+
+				<div class="field">
+					<label class="label">End time</label>
+					<div class="control">
+						<input v-model="newItemEndTime" class="input" type="time" />
 					</div>
 				</div>
 
@@ -126,6 +140,9 @@ import {
 	CalendarViewHeader,
 	CalendarMathMixin,
 } from "vue-simple-calendar" // published version
+import config from '../_helpers/server.config.js'
+import {authHeader} from '../_helpers/auth-header.js'
+import axios from 'axios';
 
 export default {
 	name: "Calendar",
@@ -147,7 +164,10 @@ export default {
 			selectionEnd: null,
 			newItemTitle: "",
 			newItemStartDate: "",
+			newItemStartTime: "",
 			newItemEndDate: "",
+			newItemEndTime: "",
+			newId: 0,
 			items: [
 				{
 					id: 1,
@@ -217,7 +237,9 @@ export default {
 	},
 	mounted() { // set date of today as default in start/end date inputs
 		this.newItemStartDate = this.isoYearMonthDay(this.today())
+		this.newItemStartTime = "00:00"
 		this.newItemEndDate = this.isoYearMonthDay(this.today())
+		this.newItemEndTime = "23:59"
 	},
 	methods: {
 		thisMonth(d, h, m) { // set datetime
@@ -253,13 +275,38 @@ export default {
 			item.originalItem.endDate = this.addDays(item.endDate, eLength)
 		},
 		addItem() { // add a calendar event
-			this.items.push({
-				startDate: this.newItemStartDate,
-				endDate: this.newItemEndDate,
-				title: this.newItemTitle,
-				id: "e" + Math.random().toString(36).substr(2, 10),
-			})
-			this.message = "You added a calendar item!"
+			try{
+				let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime)
+				let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
+				const newEvent = {
+					start_date: newStartDate.toISOString(),
+					end_date: newEndDate.toISOString(),
+					title: this.newItemTitle,
+					description: "",
+				}
+				const request = {
+					url: config.DEFAULT_ROUTE + "/event/createEvent",
+					method: 'POST',
+					data : newEvent,
+					headers: authHeader()
+				}
+				axios(request).then(response => {
+						this.newId = response.id
+						this.message = response
+						this.items.push({
+							startDate: newStartDate,
+							endDate: newEndDate,
+							title: this.newItemTitle,
+							description: "",
+							id: this.newId
+						})
+						this.message = "You added a calendar item!"
+					}).catch(error => this.message = JSON.stringify(error.response.data))
+			}
+			catch(e){
+				this.message = e
+				return
+			}
 		},
 	},
 }

@@ -39,3 +39,6 @@ typings
 
 # Dist directory
 dist
+
+#local configuration
+local.server.config.js

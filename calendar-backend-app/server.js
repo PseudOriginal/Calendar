@@ -16,8 +16,20 @@ app.use(cors());
 
 // API routes
 app.get('/', (req, res) => res.send('Hello World!'))
-app.use('/user', userRoutes); 
-app.use('/event', eventRoutes); 
+app.use('/user', (req, res, next)=>{
+    console.log(JSON.stringify(req.headers))
+    console.log('-------------------------')
+    console.log(JSON.stringify(req.body))
+    console.log('_________________________________________________________')
+    next()
+}, userRoutes); 
+app.use('/event', (req, res, next)=>{
+    console.log(JSON.stringify(req.headers))
+    console.log('-------------------------')
+    console.log(JSON.stringify(req.body))
+    console.log('_________________________________________________________')
+    next()
+}, eventRoutes); 
 
 // Global error handler
 app.use(errorHandler);

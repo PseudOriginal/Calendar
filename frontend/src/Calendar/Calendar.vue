@@ -118,6 +118,7 @@
 				@drop-on-date="onDrop"
 				@click-item="onClickItem"
 				@click-date="onClickDay"
+				:periodChangedCallback = "periodChangedCallback"
 			>
 				<calendar-view-header
 					slot="header"
@@ -168,63 +169,7 @@ export default {
 			newItemEndDate: "",
 			newItemEndTime: "",
 			newId: 0,
-			items: [
-				{
-					id: 1,
-					startDate: "2018-01-05",
-				},
-				{
-					id: 2,
-					startDate: this.thisMonth(15, 18, 30),
-				},
-				{
-					id: 3,
-					startDate: this.thisMonth(15),
-					title: "Single-day item with a long title",
-				},
-				{
-					id: 4,
-					startDate: this.thisMonth(7, 9, 25), // 7th day of this month, 9:25
-					endDate: this.thisMonth(10, 16, 30),
-					title: "Multi-day item with a long title and times",
-				},
-				{
-					id: 5,
-					startDate: this.thisMonth(20),
-					title: "My Birthday!",
-					classes: "birthday", // get icon
-					url: "https://en.wikipedia.org/wiki/Birthday",
-				},
-				{
-					id: 6,
-					startDate: this.thisMonth(5),
-					endDate: this.thisMonth(12),
-					title: "Multi-day item",
-					classes: "purple", // get color
-				},
-				{
-					id: 7,
-					startDate: this.thisMonth(29),
-					title: "Same day 1",
-				},
-				{
-					id: 8,
-					startDate: this.thisMonth(29), // 29th day of this month
-					title: "Same day 2",
-					classes: "orange",
-				},
-				{
-					id: 9,
-					startDate: this.thisMonth(29),
-					title: "Same day 3",
-				},
-				{
-					id: 10,
-					startDate: this.thisMonth(29),
-					title: "Same day 4",
-					classes: "orange",
-				},
-			],
+			items: [],
 		}
 	},
 	computed: {
@@ -242,6 +187,27 @@ export default {
 		this.newItemEndTime = "23:59"
 	},
 	methods: {
+		ignoreTimeZoneIssue(date){
+			return new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+		},
+		periodChangedCallback(newPeriod) {
+			// Demo does nothing with this information, just including the method to demonstrate how
+			// you can listen for changes to the displayed range and react to them (by loading items, etc.)
+			const fetchBetween = {
+				startDate : this.ignoreTimeZoneIssue(newPeriod.displayFirstDate).toISOString(),
+				endDate : this.ignoreTimeZoneIssue(newPeriod.displayLastDate).toISOString(),
+			}
+			const request = {
+				url: config.DEFAULT_ROUTE + "/event/getEvents",
+				method: 'GET',
+				params : fetchBetween,
+				headers: authHeader()
+			}
+			axios(request).then(response=>{
+				this.items=response.data
+				this.message= `Event fetched between: ${newPeriod.displayFirstDate.toLocaleDateString()} and ${newPeriod.displayLastDate.toLocaleDateString()}`
+			}).catch(error=>this.message=JSON.stringify(error.response.data))
+		},
 		thisMonth(d, h, m) { // set datetime
 			const t = new Date()
 			return new Date(t.getFullYear(), t.getMonth(), d, h || 0, m || 0)
@@ -279,8 +245,8 @@ export default {
 				let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime)
 				let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
 				const newEvent = {
-					start_date: newStartDate.toISOString(),
-					end_date: newEndDate.toISOString(),
+					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
+					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
 					description: "",
 				}

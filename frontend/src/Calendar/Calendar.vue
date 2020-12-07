@@ -57,14 +57,14 @@
 				<div class="field">
 					<label class="label">Title*</label>
 					<div class="control">
-						<input v-model="newItemTitle" class="input-text" type="text" />
+						<input v-model="newItemTitle" class="input-text" type="text"/>
 					</div>
 				</div>
 
 				<div class="field">
 					<label class="label">Description</label>
 					<div class="control">
-						<textarea v-model="newDescription" class="input-text"/>
+						<textarea v-model="newItemDescription" class="input-text"/>
 					</div>
 				</div>
 
@@ -151,16 +151,20 @@ import {
 	CalendarViewHeader,
 	CalendarMathMixin,
 } from "vue-simple-calendar" // published version
+import VueSimpleAlert from 'vue-simple-alert'
 import config from '../_helpers/server.config.js'
 import {authHeader} from '../_helpers/auth-header.js'
 import axios from 'axios'
+import Vue from "vue"
 
+Vue.use(VueSimpleAlert)
+//Vue.use(require("vue-moment"));
 
 export default {
 	name: "Calendar",
 	components: {
 		CalendarView,
-		CalendarViewHeader
+		CalendarViewHeader,
 	},
 	mixins: [CalendarMathMixin],
 	data() {
@@ -174,14 +178,15 @@ export default {
 			showTimes: true, // display hours for events
 			selectionStart: null,
 			selectionEnd: null,
+			eventSelectionState: false,
 			newItemTitle: "",
 			newItemDescription: "",
-			newItemStartDate: "",
+			newItemStartDate: "",//moment().format('YYYY-MM-DD'),
 			newItemStartTime: "",
-			newItemEndDate: "",
+			newItemEndDate: "",//moment().format('YYYY-MM-DD'),
 			newItemEndTime: "",
-			eventSelectionState: false,
 			newId: 0,
+			selectedItemId: 0,
 			items: [],
 		}
 	},
@@ -242,8 +247,9 @@ export default {
 		},
 		onClickItem(e) { // show message when event clicked
 			this.eventSelectionState = true
-			this.newItemTitle = e.title//${e.startDate}
-			this.newItemDescription = e.description
+			this.selectedItemId = e.id
+			this.newItemTitle = e.title
+			this.newItemDescription = e.originalItem.description
 
 			this.newItemStartDate = this.isoYearMonthDay(e.startDate)
 			this.newItemEndDate = this.isoYearMonthDay(e.endDate)
@@ -251,10 +257,11 @@ export default {
 			+":"+(e.startDate.getMinutes() < 10 ? "0"+e.startDate.getMinutes() : e.startDate.getMinutes())
 			this.newItemEndTime = (e.endDate.getHours() < 10 ? "0"+e.endDate.getHours() : e.endDate.getHours())
 			+":"+(e.endDate.getMinutes() < 10 ? "0"+e.endDate.getMinutes() : e.endDate.getMinutes())
-			//this.message = `${e.startDate}`
+			this.message = `${e.startDate} ${this.newItemStartDate}`
 		},
 		setShowDate(d) { // show message for period changed
 			//this.message = `Changing calendar view to ${d.toLocaleDateString()}`
+			this.reset(d)
 			this.eventSelectionState = false
 			this.showDate = d
 		},
@@ -276,21 +283,33 @@ export default {
 		},
 		addItem() { // add a calendar event
 			try{
+				this.$fire({ 
+					title: 'New event added.',
+					type: 'success',
+					width: 400,
+					timer: 3000
+				})
+
 				this.newItemStartTime = this.newItemStartTime != "00:00" ? this.newItemStartTime : "00:00:01" // show 00:00 if midnight
+				this.newItemStartTime = this.newItemEndTime != "00:00" ? this.newItemEndTime : "00:00:01" // show 00:00 if midnight
+				
 				let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime)
 				let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
+				
 				const newEvent = {
 					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
 					description: this.newItemDescription,
 				}
+
 				const request = {
 					url: config.DEFAULT_ROUTE + "/event/createEvent",
 					method: 'POST',
 					data : newEvent,
 					headers: authHeader()
 				}
+
 				axios(request).then(response => {
 						this.newId = response.id
 						this.message = response
@@ -302,26 +321,108 @@ export default {
 							id: this.newId
 						})
 						this.message = "You added a calendar item!"
+						
 					}).catch(error => this.message = JSON.stringify(error.response.data.message))
 			}
 			catch(e){
 				this.message = e
 				return
 			}
+
+			this.reset()
 		},
 		saveEdit() {
-			alert('Save edit function yet to implement')
-			// TODO: implement update function
+			try{
+				this.$fire({ 
+					title: 'Event updated',
+					type: 'success',
+					width: 400,
+					timer: 3000
+				})
+
+				this.newItemStartTime = this.newItemStartTime != "00:00" ? this.newItemStartTime : "00:00:01" // show 00:00 if midnight
+				this.newItemStartTime = this.newItemEndTime != "00:00" ? this.newItemEndTime : "00:00:01" // show 00:00 if midnight
+				
+				let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime)
+				let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
+			
+				const existingEvent = {
+					id: this.selectedItemId,
+					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
+					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
+					title: this.newItemTitle,
+					description: this.newItemDescription,
+				}
+
+				const request = {
+					url: config.DEFAULT_ROUTE + "/event/modifyEvent",
+					method: 'POST',
+					data: existingEvent,
+					headers: authHeader()
+				}
+				axios(request).then(response => {
+						this.message = response
+						this.items[selectedItemId].startDate = newStartDate
+						this.items[selectedItemId].newEndDate = newEndDate
+						this.items[selectedItemId].newItemTitle = newItemTitle
+						this.items[selectedItemId].newItemDescription = newItemDescription
+						
+						this.message = "You edited a calendar item!"
+						
+					}).catch(error => this.message = JSON.stringify(error.response.data.message))
+			}
+			catch(e){	
+				this.message = e
+				return
+			}
+
+			this.reset()
 		},
 		cancel() {
 			alert('Cancel function yet to implement')
+			
+			
 			// TODO: implement cancel function 
 			// when a field is edited, warning popup shows up
 			// otherwise return to add event interface
 		},
 		deleteItem() {
-			alert('Delete function yet to implement')
-			// TODO: implement delete function
+			this.$fire({
+				title: 'Are you sure you want to delete this event?',
+				text: "You won't be able to revert this operation!",
+				type: 'warning',
+				showCancelButton: true,
+				confirmButtonColor: '#3085d6',
+				cancelButtonColor: '#d33',
+				confirmButtonText: 'Yes, delete it!'
+				}).then((result) => {
+					if (result.value) {
+						this.$fire({ 
+							title: 'Event deleted.',
+							type: 'success',
+							width: 400,
+							timer: 3000
+						}).then((result) => {
+							// TODO: implement delete function
+							const request = {
+								url: config.DEFAULT_ROUTE + "/event/deleteEvent",
+								method: 'POST',
+								data: {id: this.selectedItemId},
+								headers: authHeader()
+							}
+
+							axios(request).then(response => {
+								this.message = response
+								this.items.splice(this.selectedItemId, 1)
+						
+								this.message = "You removed a calendar item!"
+						
+							}).catch(error => this.message = JSON.stringify(error.response.data.message))
+						})
+
+						this.reset()
+					}
+			});
 		}
 	},
 }

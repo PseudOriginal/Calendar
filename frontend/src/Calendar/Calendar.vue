@@ -189,7 +189,6 @@ export default {
 				startDate: "",
 				endDate: ""
 			},
-			newId: 0,
 			selectedItemId: 0,
 			items: [],
 		}
@@ -286,7 +285,7 @@ export default {
 			
 			axios(request).then(response=>{
 				this.items = response.data
-				//this.message= `Event fetched between: ${newPeriod.displayFirstDate.toLocaleDateString()} and ${newPeriod.displayLastDate.toLocaleDateString()}`
+				//this.message = `Event fetched between: ${newPeriod.displayFirstDate.toLocaleDateString()} and ${newPeriod.displayLastDate.toLocaleDateString()}`
 			}).catch(error=>this.message=JSON.stringify(error.response.data))
 		},
 		thisMonth(d, h, m) { // set datetime
@@ -367,11 +366,11 @@ export default {
 				let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
 				
 				const newEvent = {
+					id: 0,
 					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
-					description: this.newItemDescription,
-					id: ""
+					description: this.newItemDescription
 				}
 
 				const request = {
@@ -384,20 +383,20 @@ export default {
 				axios(request).then(response => {
 					this.message = response
 
-					this.newId = response.id
-					newEvent.id = this.newId
-					this.items.push(newEvent)
+					const { data } = request
+					data.id = response.data.id
+					
+					this.items.push(data)
 				
 					this.message = "You added a calendar item!"
 								
 				}).catch(error => this.message = JSON.stringify(error.response.data.message))
 				
- 
+				this.$forceUpdate()
 				this.clearFields()
 			}	
 		},
 		saveEdit() { // update a calendar event
-			
 			if (!this.checkTitle() || !this.checkDateTimes()) {
 				this.$fire({ 
 						title: this.message,
@@ -415,7 +414,7 @@ export default {
 
 				let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime)
 				let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
-		
+				
 				const existingEvent = {
 					id: this.selectedItemId,
 					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
@@ -431,19 +430,19 @@ export default {
 					headers: authHeader()
 				}
 
-				let index = this.items.map(item => { return item.id }).indexOf(this.selectedItemId)
-				this.items[index].startDate = existingEvent.startDate
-				this.items[index].endDate = existingEvent.endDate
-				this.items[index].title = existingEvent.title
-				this.items[index].description = existingEvent.description
-
 				axios(request)
 					.then(response => {
 						this.message = response
+
+						let index = this.items.map(item => { return item.id }).indexOf(this.selectedItemId)
+						this.items[index].startDate = existingEvent.startDate
+						this.items[index].endDate = existingEvent.endDate
+						this.items[index].title = existingEvent.title
+						this.items[index].description = existingEvent.description
 		
 						this.message = "You edited a calendar item!"
 					})
-					.catch(error => this.message = JSON.stringify(error.response.data.message))
+					.catch(error => alert(this.message = JSON.stringify(error.response.data.message)))
 
 				this.clearFields()
 			}	

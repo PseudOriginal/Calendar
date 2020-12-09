@@ -2,7 +2,7 @@
     <div class="jumbotron"> 
         <div class="container">
             <div class="row">
-                <div v-if="alert.message" :class="`alert ${alert.type}`">{{alert.message}}</div>
+                <div v-if="alert.message" :class="`col-sm-6 offset-sm-3 alert ${alert.type}`">{{alert.message}}</div>
                 <router-view></router-view>
             </div>
         </div>

@@ -1,15 +1,16 @@
-const config = require('../config.json');
+const config = require('config-yml');
 const { Sequelize } = require('sequelize');
  
 var db = {};
 
-const { user, password, database, options } = config.db;
-    
+db.config = { user: config.db.user, password: config.db.password, secret: config.db.secret };
+
 // Connect to database
-const sequelize = new Sequelize(database, user, password, options);
+const sequelize = new Sequelize(config.db.database, config.db.user, config.db.password, config.db.options);
 
 let models = [
-    require('../models/user.model.js')
+    require('../models/user.model.js'),
+    require('../models/event.model.js')
 ]
 
 // Initialize models

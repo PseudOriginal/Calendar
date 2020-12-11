@@ -1,12 +1,28 @@
-const config = require('config-yml');
+//const config = require('config-yml');
+const config = require('../server.config.js')
 const { Sequelize } = require('sequelize');
  
 var db = {};
 
-db.config = { user: config.db.user, password: config.db.password, secret: config.db.secret };
+db.config = { user: config('dbUser'), password: config('dbPassword'), secret: config('dbSecret') };
 
 // Connect to database
-const sequelize = new Sequelize(config.db.database, config.db.user, config.db.password, config.db.options);
+const sequelize = new Sequelize(config('dbDatabase'), config('dbUser'), config('dbPassword'), {
+    host: config('dbOptionsHost'),
+    port: config('dbOptionsPort'),
+    dialect: config('dbOptionsDialect'),
+    define: {
+        freezeTableName: config('dbOptionsDefineFreezeTableName'),
+        pool: {
+            max: config('dbOptionsDefinePoolMax'),
+            min: config('dbOptionsDefinePoolMin'),
+            acquire: config('dbOptionsDefinePoolAcquire'),
+            idle: config('dbOptionsDefinePoolIdle'),
+        },
+        operatorsAliases: config('dbOptionsDefineOperatorsAliases'),
+        connectTimeout: config('dbOptionsDefineConnectTimeout')
+    }
+});
 
 let models = [
     require('../models/user.model.js'),

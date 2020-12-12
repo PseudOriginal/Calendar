@@ -17,7 +17,7 @@ async function login({ email, password }) {
     
         // Authentication successful
         const token = jwt.sign({ sub: user.email }, secret, { expiresIn: '2h' });
-        return { ...omitHash(user.get()), token };
+        return { email: user.email, token };
 }
 
 async function register({ email, password }) {

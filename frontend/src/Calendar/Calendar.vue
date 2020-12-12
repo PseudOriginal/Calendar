@@ -286,7 +286,12 @@ export default {
 			axios(request).then(response=>{
 				this.items = response.data
 				//this.message = `Event fetched between: ${newPeriod.displayFirstDate.toLocaleDateString()} and ${newPeriod.displayLastDate.toLocaleDateString()}`
-			}).catch(error=>this.message=JSON.stringify(error.response.data))
+			}).catch(error=>this.$fire({ 
+					title: "There is a problem with the server.",
+					type: 'error',
+					width: 400,
+					timer: 3000
+				}).then(this.$router.push('/login')))
 		},
 		thisMonth(d, h, m) { // set datetime
 			const t = new Date()

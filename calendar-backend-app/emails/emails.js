@@ -20,7 +20,7 @@ var DailyPostman = module.exports = {
 	addDailyMail: async function(event, email) {
 		const dates = this.getTodayDates()
 		if (event.notify && dates[0].getTime() <= event.startDate && event.startDate <= dates[1].getTime())
-			if (!this.dailyMail.includes(email))
+			if (this.dailyMail[email] == undefined)
 				this.dailyMail[email] = []
 			this.dailyMail[email].push(event)
 	},
@@ -65,7 +65,7 @@ var DailyPostman = module.exports = {
 		const mg = mailgun({apiKey: config('API_KEY'), domain: config('DOMAIN')})
 		const data = {
 			from: "The Calendar Team <awesome.calendar.team@gmail.com>",
-			to: 'hadrien.tournes@efrei.net',
+			to: email,
 			subject: event.title,
 			text: "Reminder: you have the event '" + event.title + "' in " + diffMins + " minutes"
 		}

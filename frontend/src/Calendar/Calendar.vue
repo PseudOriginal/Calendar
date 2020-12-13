@@ -157,7 +157,6 @@ import {
 	CalendarMathMixin,
 } from "vue-simple-calendar" // published version
 import VueSimpleAlert from 'vue-simple-alert'
-import config from '../_helpers/server.config.js'
 import {authHeader} from '../_helpers/auth-header.js'
 import axios from 'axios'
 import Vue from "vue"
@@ -285,7 +284,7 @@ export default {
 			}
 
 			const request = {
-				url: config.DEFAULT_ROUTE + "/event/getEvents",
+				url: "/event/getEvents",
 				method: 'GET',
 				params : fetchBetween,
 				headers: authHeader()
@@ -388,7 +387,7 @@ export default {
 				}
 
 				const request = {
-					url: config.DEFAULT_ROUTE + "/event/createEvent",
+					url: "/event/createEvent",
 					method: 'POST',
 					data : newEvent,
 					headers: authHeader()
@@ -438,7 +437,7 @@ export default {
 				}
 
 				const request = {
-					url: config.DEFAULT_ROUTE + "/event/modifyEvent",
+					url: "/event/modifyEvent",
 					method: 'POST',
 					data: existingEvent,
 					headers: authHeader()
@@ -499,7 +498,7 @@ export default {
 					}).then((result) => {
 
 						const request = {
-							url: config.DEFAULT_ROUTE + "/event/deleteEvent",
+							url: "/event/deleteEvent",
 							method: 'POST',
 							data: {id: this.selectedItemId},
 							headers: authHeader()

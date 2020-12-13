@@ -51,5 +51,5 @@ const dailyPostman = require('./emails/emails.js')
 dailyPostman.dailyTask()
 
 // Start server
-const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4001;
+const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;
 app.listen(port, () => console.log(`Start listening on port ${port}`));

@@ -5,7 +5,8 @@ const db = require('../_helpers/db');
 module.exports = {
     login,
     register,
-    getUser
+    getUser,
+    getUsers
 }
 
 async function login({ email, password }) {
@@ -36,6 +37,11 @@ async function register({ email, password }) {
 async function getUser(email) {
     const user = await db.User.findOne({ where: { email }});
     return user;
+}
+
+async function getUsers() {
+    const users = await db.User.findAll();
+    return users;
 }
 
 function omitHash(user) {

@@ -2,7 +2,7 @@ node_modules
 .vscode
 
 # Default configuration file
-config.yml
+local.server.config.js
 
 # Set environment variables
 .env

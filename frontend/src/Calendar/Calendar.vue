@@ -189,7 +189,6 @@ export default {
 				startDate: "",
 				endDate: ""
 			},
-			newId: 0,
 			selectedItemId: 0,
 			items: [],
 		}
@@ -232,11 +231,11 @@ export default {
 		},
 		checkChanges() {
 			const { title, description, startDate, endDate } = this.tempItem
-			let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime).toString()
-			let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime).toString()
+			let newStartDate = this.newItemStartDate + " " + this.newItemStartTime
+			let newEndDate = this.newItemEndDate + " " + this.newItemEndTime
 
 			if (title == this.newItemTitle && description == this.newItemDescription
-			&& startDate.toString() == newStartDate && endDate.toString() == newEndDate)
+			&& startDate == newStartDate && endDate == newEndDate)
 				return false 
 			else 
 				return true
@@ -285,9 +284,14 @@ export default {
 			}
 			
 			axios(request).then(response=>{
-				this.items=response.data
-				//this.message= `Event fetched between: ${newPeriod.displayFirstDate.toLocaleDateString()} and ${newPeriod.displayLastDate.toLocaleDateString()}`
-			}).catch(error=>this.message=JSON.stringify(error.response.data))
+				this.items = response.data
+				//this.message = `Event fetched between: ${newPeriod.displayFirstDate.toLocaleDateString()} and ${newPeriod.displayLastDate.toLocaleDateString()}`
+			}).catch(error=>this.$fire({ 
+					title: "There is a problem with the server.",
+					type: 'error',
+					width: 400,
+					timer: 3000
+				}).then(this.$router.push('/login')))
 		},
 		thisMonth(d, h, m) { // set datetime
 			const t = new Date()
@@ -300,23 +304,25 @@ export default {
 		},
 		onClickItem(e) { // show message when event clicked
 			this.eventSelectionState = true
-			this.selectedItemId = e.id
-			this.newItemTitle = e.title
-			this.newItemDescription = e.originalItem.description
+			
+			let i = e.originalItem
 
-			this.newItemStartDate = this.isoYearMonthDay(e.startDate)
-			this.newItemEndDate = this.isoYearMonthDay(e.endDate)
-			this.newItemStartTime = (e.startDate.getHours() < 10 ? "0"+e.startDate.getHours() : e.startDate.getHours())
-			+":"+(e.startDate.getMinutes() < 10 ? "0"+e.startDate.getMinutes() : e.startDate.getMinutes())
-			this.newItemEndTime = (e.endDate.getHours() < 10 ? "0"+e.endDate.getHours() : e.endDate.getHours())
-			+":"+(e.endDate.getMinutes() < 10 ? "0"+e.endDate.getMinutes() : e.endDate.getMinutes())
+			this.selectedItemId = i.id
+			this.newItemTitle = i.title
+			this.newItemDescription = i.description
 
-			let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime)
-			let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
+			this.newItemStartDate = i.startDate.substring(0, 10)
+			this.newItemEndDate = i.endDate.substring(0, 10)
+			
+			this.newItemStartTime = i.startDate.substring(11, 16)
+			this.newItemEndTime = i.endDate.substring(11, 16)
+
+			let newStartDate = this.newItemStartDate + " " + this.newItemStartTime
+			let newEndDate = this.newItemEndDate + " " + this.newItemEndTime
 
 			this.tempItem = {
-				title: e.title,
-				description: e.originalItem.description,
+				title: i.title,
+				description: i.description,
 				startDate: newStartDate,
 				endDate: newEndDate,
 			}
@@ -333,6 +339,9 @@ export default {
 		finishSelection(dateRange) { // show message when selection ended
 			this.setSelection(dateRange)
 			this.message = `You selected: ${this.selectionStart.toLocaleDateString()} -${this.selectionEnd.toLocaleDateString()}`
+
+			this.newItemStartDate = this.isoYearMonthDay(this.selectionStart)
+			this.newItemEndDate = this.isoYearMonthDay(this.selectionEnd)
 		},
 		onDrop(item, date) {
 			this.message = `You dropped ${item.id} on ${date.toLocaleDateString()}`
@@ -360,12 +369,13 @@ export default {
 
 				let newStartDate = new Date(this.newItemStartDate + " " + this.newItemStartTime)
 				let newEndDate = new Date(this.newItemEndDate + " " + this.newItemEndTime)
-					
+				
 				const newEvent = {
+					id: 0,
 					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
-					description: this.newItemDescription,
+					description: this.newItemDescription
 				}
 
 				const request = {
@@ -376,19 +386,18 @@ export default {
 				}
 
 				axios(request).then(response => {
-					this.newId = response.id
-						this.message = response
-						this.items.push({
-							startDate: newStartDate,
-							endDate: newEndDate,
-							title: newItemTitle,
-							description: newItemDescription,
-							id: this.newId
-						})
+					this.message = response
+
+					const { data } = request
+					data.id = response.data.id
+					
+					this.items.push(data)
+				
 					this.message = "You added a calendar item!"
 								
 				}).catch(error => this.message = JSON.stringify(error.response.data.message))
 				
+				this.$forceUpdate()
 				this.clearFields()
 			}	
 		},
@@ -425,18 +434,20 @@ export default {
 					data: existingEvent,
 					headers: authHeader()
 				}
-					
+
 				axios(request)
 					.then(response => {
 						this.message = response
-						this.items[selectedItemId].startDate = newStartDate
-						this.items[selectedItemId].newEndDate = newEndDate
-						this.items[selectedItemId].newItemTitle = newItemTitle
-						this.items[selectedItemId].newItemDescription = newItemDescription
-							
+
+						let index = this.items.map(item => { return item.id }).indexOf(this.selectedItemId)
+						this.items[index].startDate = existingEvent.startDate
+						this.items[index].endDate = existingEvent.endDate
+						this.items[index].title = existingEvent.title
+						this.items[index].description = existingEvent.description
+		
 						this.message = "You edited a calendar item!"
 					})
-					.catch(error => this.message = JSON.stringify(error.response.data.message))
+					.catch(error => alert(this.message = JSON.stringify(error.response.data.message)))
 
 				this.clearFields()
 			}	
@@ -487,8 +498,10 @@ export default {
 
 						axios(request).then(response => {
 							this.message = response
-							this.items.splice(this.selectedItemId, 1)
-						
+
+							let index = this.items.map(item => { return item.id }).indexOf(this.selectedItemId);
+							this.items.splice(index, 1)
+	
 							this.message = "You removed a calendar item!"
 						
 						}).catch(error => this.message = JSON.stringify(error.response.data.message))

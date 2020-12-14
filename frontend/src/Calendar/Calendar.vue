@@ -69,6 +69,13 @@
 				</div>
 
 				<div class="field">
+					<label class="checkbox">
+						<input v-model="newItemNotify" type="checkbox" />
+						Notify me by email
+					</label>
+				</div>
+
+				<div class="field">
 					<label class="label">Start date*</label>
 					<div class="control">
 						<input v-model="newItemStartDate" class="input-date" type="date"  />
@@ -173,6 +180,7 @@ export default {
 			displayPeriodUom: "month",
 			displayWeekNumbers: false,
 			showTimes: true, // display hours for events
+			newItemNotify: false,
 			selectionStart: null,
 			selectionEnd: null,
 			eventSelectionState: false,
@@ -374,6 +382,7 @@ export default {
 					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
+					notify: this.newItemNotify,
 					description: this.newItemDescription
 				}
 

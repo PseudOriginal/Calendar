@@ -21,6 +21,7 @@ function createEventSchema(req, res, next) {
         startDate: Joi.date().required(),
         endDate: Joi.date().required(),
         title : Joi.string().required(),
+        notify: Joi.boolean().required(),
         description : Joi.string().allow('')
     });
     validateRequest(req, next, schema);
@@ -47,6 +48,7 @@ function modifyEventSchema(req, res, next) {
         startDate: Joi.date().required(),
         endDate: Joi.date().required(),
         title : Joi.string().required(),
+        notify: Joi.boolean().required(),
         description : Joi.string().allow('')
     });
     validateRequest(req, next, schema);
@@ -66,7 +68,7 @@ function createEventService(req, res, next) {
 }
 
 function getEventsService(req, res, next) {
-    eventService.getEvents(req.query, req.user.email)
+    eventService.getEvents(req.query, req.user.email, false)
         .then(events => res.json(events))
         .catch(next);
 }

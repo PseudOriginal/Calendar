@@ -69,6 +69,13 @@
 				</div>
 
 				<div class="field">
+					<label class="checkbox">
+						<input v-model="newItemNotify" type="checkbox" />
+						Notify me by email
+					</label>
+				</div>
+
+				<div class="field">
 					<label class="label">Start date*</label>
 					<div class="control">
 						<input v-model="newItemStartDate" class="input-date" type="date"  />
@@ -157,7 +164,6 @@ import {
 	CalendarMathMixin,
 } from "vue-simple-calendar" // published version
 import VueSimpleAlert from 'vue-simple-alert'
-import config from '../_helpers/server.config.js'
 import {authHeader} from '../_helpers/auth-header.js'
 import axios from 'axios'
 import Vue from "vue"
@@ -181,6 +187,7 @@ export default {
 			displayPeriodUom: "month",
 			displayWeekNumbers: false,
 			showTimes: true, // display hours for events
+			newItemNotify: false,
 			selectionStart: null,
 			selectionEnd: null,
 			eventSelectionState: false,
@@ -285,7 +292,7 @@ export default {
 			}
 
 			const request = {
-				url: config.DEFAULT_ROUTE + "/event/getEvents",
+				url: "/event/getEvents",
 				method: 'GET',
 				params : fetchBetween,
 				headers: authHeader()
@@ -383,11 +390,12 @@ export default {
 					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
+					notify: this.newItemNotify,
 					description: this.newItemDescription
 				}
 
 				const request = {
-					url: config.DEFAULT_ROUTE + "/event/createEvent",
+					url: "/event/createEvent",
 					method: 'POST',
 					data : newEvent,
 					headers: authHeader()
@@ -437,7 +445,7 @@ export default {
 				}
 
 				const request = {
-					url: config.DEFAULT_ROUTE + "/event/modifyEvent",
+					url: "/event/modifyEvent",
 					method: 'POST',
 					data: existingEvent,
 					headers: authHeader()
@@ -498,7 +506,7 @@ export default {
 					}).then((result) => {
 
 						const request = {
-							url: config.DEFAULT_ROUTE + "/event/deleteEvent",
+							url: "/event/deleteEvent",
 							method: 'POST',
 							data: {id: this.selectedItemId},
 							headers: authHeader()

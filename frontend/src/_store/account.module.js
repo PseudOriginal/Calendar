@@ -13,10 +13,12 @@ const actions = {
     userService.login(email, password).then(
       (user) => {
         commit("loginSuccess", user);
+        // go to HomePage
         router.push("/");
       },
       (error) => {
         commit("loginFailure", error);
+        // send error message
         dispatch("alert/error", error, { root: true });
       }
     );
@@ -31,6 +33,7 @@ const actions = {
     userService.register(user).then(
       (user) => {
         commit("registerSuccess", user);
+        // go to LoginPage
         router.push("/login");
         setTimeout(() => {
           // display success message after route change completes
@@ -39,6 +42,7 @@ const actions = {
       },
       (error) => {
         commit("registerFailure", error);
+        // send error message
         dispatch("alert/error", error, { root: true });
       }
     );

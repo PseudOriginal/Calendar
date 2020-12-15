@@ -239,7 +239,7 @@ export default {
 			this.reset(this.today())
 			this.clearTempItem()
 			this.selectionStart = null
-			this.selectionEnd = null 
+			this.selectionEnd = null
 		},
 		reset(d) {
 			this.eventSelectionState = false

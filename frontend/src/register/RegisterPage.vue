@@ -33,6 +33,7 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
+    name: "RegisterPage",
     data () {
         return {
             user: {

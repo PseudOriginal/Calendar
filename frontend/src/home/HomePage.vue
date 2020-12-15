@@ -15,6 +15,7 @@
 import { mapState, mapActions } from 'vuex'
 
 export default {
+    name: "HomePage",
     computed: {
         ...mapState({
             account: state => state.account
@@ -24,7 +25,6 @@ export default {
 
     },
     methods: {
-
     }
 };
 </script>

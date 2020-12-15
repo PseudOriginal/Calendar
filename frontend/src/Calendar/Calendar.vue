@@ -538,7 +538,7 @@ export default {
 			const formData = new FormData();
 			formData.append("icalfile", this.selectedFile);
 			const request = {
-				url: config.DEFAULT_ROUTE + "/event/importEvent",
+				url: "/event/importEvent",
 				method: 'POST',
 				data: formData,
 				headers: authHeader()
@@ -565,7 +565,7 @@ export default {
 		},
 		exportIcalFile(){
 			const request = {
-				url: config.DEFAULT_ROUTE + "/event/exportEvent",
+				url: "/event/exportEvent",
 				method: 'GET',
 				headers: authHeader()
 			}

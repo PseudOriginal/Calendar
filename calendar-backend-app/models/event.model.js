@@ -19,7 +19,8 @@ module.exports = function events(sequelize) {
             },
             notify: {
                 type: DataTypes.BOOLEAN,
-                allowNull: false
+                allowNull: false,
+                defaultValue: false
             },
             description: {
                 type: DataTypes.STRING(255),

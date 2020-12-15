@@ -1,14 +1,18 @@
 const express = require('express');
+const multer = require("multer");
 const Joi = require('joi');
 const validateRequest = require('../_middleware/validate-request');
 const authorize = require('../_middleware/authorize');
 const eventService = require('../services/event.service');
+const upload = multer({ dest: '../uploads/' });
 
 const router = express.Router();
 router.post('/createEvent', authorize(), createEventSchema, createEventService);
 router.get('/getEvents', authorize(), getEventsSchema, getEventsService);
 router.post('/modifyEvent', authorize(), modifyEventSchema, modifyEventService);
 router.post('/deleteEvent', authorize(), deleteEventSchema, deleteEventService);
+router.post('/importEvent', upload.single('icalfile'), authorize(), importEventService);
+router.get('/exportEvent', authorize(), exportEventService);
 
 module.exports = router;
 
@@ -78,5 +82,18 @@ function modifyEventService(req, res, next) {
 function deleteEventService(req, res, next) {
     eventService.deleteEvent(req.body, req.user.email)
         .then(deleted => res.json(deleted))
+        .catch(next);
+}
+
+function importEventService(req, res, next) {
+    eventService.importEvents(req.file, req.user.email)
+        .then(importedEvents => res.json(importedEvents))
+        .catch(next);
+}
+
+function exportEventService(req, res, next) {
+    console.log('exportEventService');
+    eventService.exportEvents(req.user.email)
+        .then(exportFile => res.download(exportFile, 'calendar.ics'))
         .catch(next);
 }

@@ -4,7 +4,7 @@ const Joi = require('joi');
 const validateRequest = require('../_middleware/validate-request');
 const authorize = require('../_middleware/authorize');
 const eventService = require('../services/event.service');
-const upload = multer({ dest: '../uploads/' });
+const upload = multer();
 
 const router = express.Router();
 router.post('/createEvent', authorize(), createEventSchema, createEventService);

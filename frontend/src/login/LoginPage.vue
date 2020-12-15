@@ -1,6 +1,15 @@
 <template>
     <div class="col-sm-6 offset-sm-3">
-        <h2>Login</h2>
+        <div style="background-color:#668bb3;border-radius:.25rem;padding:.375rem .75rem">
+        <div style="text-align:center;">
+        <h1>C@lendar</h1>
+        </div>
+        <div style="text-align:right">
+            The best calendar app
+        </div>
+        </div>
+        <br>
+        <h2 style="color:#668bb3">Login</h2>
         <form @submit.prevent="handleSubmit">
             <div class="form-group">
                 <label for="email">Email</label>

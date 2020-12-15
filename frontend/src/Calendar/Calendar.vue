@@ -13,7 +13,7 @@
 					<label class="label">Calendar format:</label>
 					<div class="control">
 						<div class="select">
-							<select v-model="displayPeriodUom">
+							<select class='custom-select custom-select-sm' v-model="displayPeriodUom">
 								<option>month</option>
 								<option>week</option>
 								<option>year</option>
@@ -26,7 +26,7 @@
 					<label class="label">Starting weekday:</label>
 					<div class="control">
 						<div class="select">
-							<select v-model="startingDayOfWeek">
+							<select class='custom-select custom-select-sm' v-model="startingDayOfWeek">
 								<option
 									v-for="(d, index) in dayNames"
 									:key="index"
@@ -40,70 +40,68 @@
 				</div>
 
 				<div class="field">
-					<label class="checkbox">
-						<input v-model="displayWeekNumbers" type="checkbox" />
-						Display week numbers
-					</label>
+					<div class="custom-control custom-checkbox">
+						<input v-model="displayWeekNumbers" type="checkbox" class='custom-control-input' id="defaultChecked" />
+						<label class="custom-control-label" for="defaultChecked">Display week numbers</label>
+					</div>
 				</div>
 
 				<div class="field">
-					<label class="checkbox">
-						<input v-model="showTimes" type="checkbox" />
-						Display hours
-					</label>
+					<div class="custom-control custom-checkbox">
+						<input v-model="showTimes" class='custom-control-input' type="checkbox" id="defaultChecked1" />
+						<label class="custom-control-label" for="defaultChecked1">Display hours</label>
+					</div>
 				</div>
 
 				<div class="field">
-					<label class="checkbox">
-						<input v-model="enableImportExport" type="checkbox" />
-						Enable Import/Export
-					</label>
+					<div class="custom-control custom-checkbox">
+						<input v-model="enableImportExport" class='custom-control-input' type="checkbox" id="defaultChecked2" />
+						<label class="custom-control-label" for="defaultChecked2">Enable Import/Export</label>
+					</div>
 				</div>
 
 				<div v-if="enableImportExport" class="field">
 					<input type="file" ref="file" name="icalfile" @change="fileUpload" hidden>
 					<div class="btnContainer">
-						<button class="button is-info" @click="$refs.file.click()">
+						<button class="btn btn-secondary" @click="$refs.file.click()">
 							Import ical 
 						</button>
-						<button class="button is-info" @click="exportIcalFile">
+						<button class="btn btn-secondary" @click="exportIcalFile">
 							Export as ical
 						</button>
 					</div>
 				</div>
 
 				<div class="field">
-					<label class="label">Title*</label>
-					<div class="control">
-						<input v-model="newItemTitle" class="input-text" type="text"/>
+					<div class="form-group">
+						<input v-model="newItemTitle" class="form-control" type="text" placeholder="Title"/>
 					</div>
 				</div>
 
 				<div class="field">
-					<label class="label">Description</label>
-					<div class="control">
-						<textarea v-model="newItemDescription" class="input-text"/>
+					<div class="form-group">
+						<textarea v-model="newItemDescription" class="form-control" placeholder="Description"/>
 					</div>
 				</div>
 
 				<div class="field">
-					<label class="checkbox">
-						<input v-model="newItemNotify" type="checkbox" />
-						Notify me by email
-					</label>
+					<div class="custom-control custom-checkbox">
+						<input v-model="newItemNotify" class='custom-control-input' type="checkbox" id="defaultChecked3" />
+						<label class="custom-control-label" for="defaultChecked3">Notify me by email</label>
+					</div>
 				</div>
 
 				<div class="field">
-					<label class="label">Start date*</label>
-					<div class="control">
+					<label for='startDate' class="label">Start date*</label>
+					<div class="control" id='startDate'>
 						<input v-model="newItemStartDate" class="input-date" type="date"  />
 						<input v-model="newItemStartTime" class="input-time" type="time" />
 					</div>
 				</div>
 
 				<div class="field">
-					<label class="label">End date*</label>
-					<div class="control">
+					<label for='endDate' class="label">End date*</label>
+					<div class="control" id='endDate'>
 						<input v-model="newItemEndDate" class="input-date" type="date" />
 						<input v-model="newItemEndTime" class="input-time" type="time" />
 					</div>
@@ -111,21 +109,21 @@
 				
 				<br>	
 				<div v-if="!eventSelectionState">
-					<button class="button is-info" @click="addItem">
+					<button class="btn btn-success" @click="addItem">
 						Add Item
 					</button>
-					<button class="button is-info" @click="clearFields">
+					<button class="btn btn-secondary" @click="clearFields">
 						Clear Fields
 					</button>
 				</div>
 				<div v-else class="btnContainer">
-  					<button class="button is-info" @click="saveEdit">
+  					<button class="btn btn-success btn-sm" @click="saveEdit">
 						Save Edit
 					</button>
-					<button class="button is-info" @click="cancel">
+					<button class="btn btn-secondary btn-sm" @click="cancel">
 						Cancel
 					</button>
-					<button class="button is-info" @click="deleteItem">
+					<button class="btn btn-danger btn-sm" @click="deleteItem">
 						Delete
 					</button>
 				</div>

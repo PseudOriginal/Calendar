@@ -20,6 +20,11 @@ export default {
         ...mapState({
             account: state => state.account
         })
+    },
+    created () {
+
+    },
+    methods: {
     }
 };
 </script>

@@ -3,14 +3,14 @@
 		<div class="calendar-controls">
 
 			<div class="box">
-				<div class="field">
+				<div class="field-control">
 					<router-link to="/">Back to home page</router-link>
 				</div>
 
 				<h4 class="title is-5">Options</h4>
 
-				<div class="field">
-					<label class="label">Change calendar format</label>
+				<div class="field-control">
+					<label class="label">Calendar format:</label>
 					<div class="control">
 						<div class="select">
 							<select v-model="displayPeriodUom">
@@ -22,8 +22,8 @@
 					</div>
 				</div>
 
-				<div class="field">
-					<label class="label">Starting weekday</label>
+				<div class="field-control">
+					<label class="label">Starting weekday:</label>
 					<div class="control">
 						<div class="select">
 							<select v-model="startingDayOfWeek">
@@ -40,7 +40,6 @@
 				</div>
 
 				<div class="field">
-					<br>
 					<label class="checkbox">
 						<input v-model="displayWeekNumbers" type="checkbox" />
 						Display week numbers
@@ -52,6 +51,25 @@
 						<input v-model="showTimes" type="checkbox" />
 						Display hours
 					</label>
+				</div>
+
+				<div class="field">
+					<label class="checkbox">
+						<input v-model="enableImportExport" type="checkbox" />
+						Enable Import/Export
+					</label>
+				</div>
+
+				<div v-if="enableImportExport" class="field">
+					<input type="file" ref="file" name="icalfile" @change="fileUpload" hidden>
+					<div class="btnContainer">
+						<button class="button is-info" @click="$refs.file.click()">
+							Import ical 
+						</button>
+						<button class="button is-info" @click="exportIcalFile">
+							Export as ical
+						</button>
+					</div>
 				</div>
 
 				<div class="field">
@@ -98,13 +116,6 @@
 					</button>
 					<button class="button is-info" @click="clearFields">
 						Clear Fields
-					</button>
-					<input type="file" name="icalfile" @change="fileUpload">
-					<button class="button is-info" @click="importIcalFile">
-						Import Calendar (ical)
-					</button>
-					<button class="button is-info" @click="exportIcalFile">
-						Export Calendar (ical)
 					</button>
 				</div>
 				<div v-else class="btnContainer">
@@ -187,6 +198,7 @@ export default {
 			displayPeriodUom: "month",
 			displayWeekNumbers: false,
 			showTimes: true, // display hours for events
+			enableImportExport: false,
 			newItemNotify: false,
 			selectionStart: null,
 			selectionEnd: null,
@@ -529,41 +541,57 @@ export default {
 				}
 			})
 		},
-		fileUpload(event){
-			this.selectedFile = event.target.files[0];
+		fileUpload(e){
+			this.selectedFile = e.target.files[0]
+			this.importIcalFile()
 		},
 		importIcalFile(){
-			if(this.selectedFile == "")
-			{
-				return;
-			}
-			const formData = new FormData();
-			formData.append("icalfile", this.selectedFile);
-			const request = {
-				url: "/event/importEvent",
-				method: 'POST',
-				data: formData,
-				headers: authHeader()
-			}
-			axios(request).then(response => {
-				var imported = response.data;
-				for(let i in imported)
-				{
-					this.items.push(imported[i]);
-				}
-				this.$fire({ 
-						title: 'Import successful',
-						type: 'success',
-						width: 400,
-						timer: 3000})
-				this.message = response
+			const fileName = this.$refs.file.value
+			const extensionStart = fileName.indexOf('.')
+			const extensionEnd = fileName.length
+			const extension = fileName.substring(extensionStart, extensionEnd)
 
-				this.message = "Import successful"
-			
-			}).catch(error => this.message = JSON.stringify(error.response.data.message))
+			if (extension != ".ics") {
+				if(fileName == "")
+					return;
+				this.$fire({
+					title: 'File extension not acceptable.',
+					type: 'error',
+					width: 400,
+					timer: 3000
+				})
+				return;
+			} else {
+				const formData = new FormData();
+				formData.append("icalfile", this.selectedFile);
+
+				const request = {
+					url: "/event/importEvent",
+					method: 'POST',
+					data: formData,
+					headers: authHeader()
+				}
+
+				axios(request).then(response => {
+					var imported = response.data;
+					for(let i in imported)
+					{
+						this.items.push(imported[i]);
+					}
+					this.$fire({ 
+							title: 'Import successful',
+							type: 'success',
+							width: 400,
+							timer: 3000})
+
+					this.message = "Import successful"
+				
+				}).catch(error => this.message = JSON.stringify(error.response.data.message))
+			}
 
 			this.$forceUpdate()
 			this.clearFields()
+			this.selectedFile = null;
 		},
 		exportIcalFile(){
 			const request = {
@@ -633,5 +661,14 @@ body {
 }
 .input-time {
 	width: 75px
+}
+.field-control {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.btnContainer {
+	margin-top: 5px;
+	margin-bottom: 10px;
 }
 </style>

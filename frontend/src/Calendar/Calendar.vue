@@ -92,6 +92,13 @@
 					<button class="button is-info" @click="clearFields">
 						Clear Fields
 					</button>
+					<input type="file" name="icalfile" @change="fileUpload">
+					<button class="button is-info" @click="importIcalFile">
+						Import Calendar (ical)
+					</button>
+					<button class="button is-info" @click="exportIcalFile">
+						Export Calendar (ical)
+					</button>
 				</div>
 				<div v-else class="btnContainer">
   					<button class="button is-info" @click="saveEdit">
@@ -191,6 +198,7 @@ export default {
 			},
 			selectedItemId: 0,
 			items: [],
+			selectedFile: "",
 		}
 	},
 	computed: {
@@ -510,6 +518,50 @@ export default {
 					})
 				}
 			})
+		},
+		fileUpload(event){
+			this.selectedFile = event.target.files[0];
+		},
+		importIcalFile(){
+			if(this.selectedFile == "")
+			{
+				return;
+			}
+			const formData = new FormData();
+			formData.append("icalfile", this.selectedFile);
+			const request = {
+				url: config.DEFAULT_ROUTE + "/event/importEvent",
+				method: 'POST',
+				data: formData,
+				headers: authHeader()
+			}
+			axios(request).then(response => {
+				var imported = response.data;
+				console.log(this.items);
+				console.log(imported);
+				for(let i in imported)
+				{
+					console.log(imported[i]);
+					this.items.push(imported[i]);
+				}
+				console.log(this.items);
+				this.$fire({ 
+						title: 'Import successful',
+						type: 'success',
+						width: 400,
+						timer: 3000})
+				this.message = response
+
+				this.message = "Import successful"
+			
+			}).catch(error => this.message = JSON.stringify(error.response.data.message))
+
+			this.$forceUpdate()
+			this.clearFields()
+		},
+		exportIcalFile(){
+			icalgen = require('ical-generator');
+
 		}
 	}
 }

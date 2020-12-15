@@ -34,5 +34,8 @@ module.exports = {
         config: JSON.stringify({
             apiUrl: ""
         })
-    }
+    },
+	node: {
+		fs: 'empty'
+	}
 }

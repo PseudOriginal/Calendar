@@ -11,6 +11,7 @@ const sequelize = new Sequelize(config('dbDatabase'), config('dbUser'), config('
     host: config('dbOptionsHost'),
     port: config('dbOptionsPort'),
     dialect: config('dbOptionsDialect'),
+    logging: false,
     define: {
         freezeTableName: config('dbOptionsDefineFreezeTableName'),
         pool: {

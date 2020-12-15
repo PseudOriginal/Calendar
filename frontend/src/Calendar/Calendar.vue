@@ -3,17 +3,17 @@
 		<div class="calendar-controls">
 
 			<div class="box">
-				<div class="field">
+				<div class="field-control">
 					<router-link to="/">Back to home page</router-link>
 				</div>
 
 				<h4 class="title is-5">Options</h4>
 
-				<div class="field">
-					<label class="label">Change calendar format</label>
+				<div class="field-control">
+					<label class="label">Calendar format:</label>
 					<div class="control">
 						<div class="select">
-							<select v-model="displayPeriodUom">
+							<select class='custom-select custom-select-sm' v-model="displayPeriodUom">
 								<option>month</option>
 								<option>week</option>
 								<option>year</option>
@@ -22,11 +22,11 @@
 					</div>
 				</div>
 
-				<div class="field">
-					<label class="label">Starting weekday</label>
+				<div class="field-control">
+					<label class="label">Starting weekday:</label>
 					<div class="control">
 						<div class="select">
-							<select v-model="startingDayOfWeek">
+							<select class='custom-select custom-select-sm' v-model="startingDayOfWeek">
 								<option
 									v-for="(d, index) in dayNames"
 									:key="index"
@@ -40,45 +40,68 @@
 				</div>
 
 				<div class="field">
-					<br>
-					<label class="checkbox">
-						<input v-model="displayWeekNumbers" type="checkbox" />
-						Display week numbers
-					</label>
-				</div>
-
-				<div class="field">
-					<label class="checkbox">
-						<input v-model="showTimes" type="checkbox" />
-						Display hours
-					</label>
-				</div>
-
-				<div class="field">
-					<label class="label">Title*</label>
-					<div class="control">
-						<input v-model="newItemTitle" class="input-text" type="text"/>
+					<div class="custom-control custom-checkbox">
+						<input v-model="displayWeekNumbers" type="checkbox" class='custom-control-input' id="defaultChecked" />
+						<label class="custom-control-label" for="defaultChecked">Display week numbers</label>
 					</div>
 				</div>
 
 				<div class="field">
-					<label class="label">Description</label>
-					<div class="control">
-						<textarea v-model="newItemDescription" class="input-text"/>
+					<div class="custom-control custom-checkbox">
+						<input v-model="showTimes" class='custom-control-input' type="checkbox" id="defaultChecked1" />
+						<label class="custom-control-label" for="defaultChecked1">Display hours</label>
 					</div>
 				</div>
 
 				<div class="field">
-					<label class="label">Start date*</label>
-					<div class="control">
+					<div class="custom-control custom-checkbox">
+						<input v-model="enableImportExport" class='custom-control-input' type="checkbox" id="defaultChecked2" />
+						<label class="custom-control-label" for="defaultChecked2">Enable Import/Export</label>
+					</div>
+				</div>
+
+				<div v-if="enableImportExport" class="field">
+					<input type="file" ref="file" name="icalfile" @change="fileUpload" hidden>
+					<div class="btnContainer">
+						<button class="btn btn-secondary" @click="$refs.file.click()">
+							Import ical 
+						</button>
+						<button class="btn btn-secondary" @click="exportIcalFile">
+							Export as ical
+						</button>
+					</div>
+				</div>
+
+				<div class="field">
+					<div class="form-group">
+						<input v-model="newItemTitle" class="form-control" type="text" placeholder="Title"/>
+					</div>
+				</div>
+
+				<div class="field">
+					<div class="form-group">
+						<textarea v-model="newItemDescription" class="form-control" placeholder="Description"/>
+					</div>
+				</div>
+
+				<div class="field">
+					<div class="custom-control custom-checkbox">
+						<input v-model="newItemNotify" class='custom-control-input' type="checkbox" id="defaultChecked3" />
+						<label class="custom-control-label" for="defaultChecked3">Notify me by email</label>
+					</div>
+				</div>
+
+				<div class="field">
+					<label for='startDate' class="label">Start date*</label>
+					<div class="control" id='startDate'>
 						<input v-model="newItemStartDate" class="input-date" type="date"  />
 						<input v-model="newItemStartTime" class="input-time" type="time" />
 					</div>
 				</div>
 
 				<div class="field">
-					<label class="label">End date*</label>
-					<div class="control">
+					<label for='endDate' class="label">End date*</label>
+					<div class="control" id='endDate'>
 						<input v-model="newItemEndDate" class="input-date" type="date" />
 						<input v-model="newItemEndTime" class="input-time" type="time" />
 					</div>
@@ -86,21 +109,21 @@
 				
 				<br>	
 				<div v-if="!eventSelectionState">
-					<button class="button is-info" @click="addItem">
+					<button class="btn btn-success" @click="addItem">
 						Add Item
 					</button>
-					<button class="button is-info" @click="clearFields">
+					<button class="btn btn-secondary" @click="clearFields">
 						Clear Fields
 					</button>
 				</div>
 				<div v-else class="btnContainer">
-  					<button class="button is-info" @click="saveEdit">
+  					<button class="btn btn-success btn-sm" @click="saveEdit">
 						Save Edit
 					</button>
-					<button class="button is-info" @click="cancel">
+					<button class="btn btn-secondary btn-sm" @click="cancel">
 						Cancel
 					</button>
-					<button class="button is-info" @click="deleteItem">
+					<button class="btn btn-danger btn-sm" @click="deleteItem">
 						Delete
 					</button>
 				</div>
@@ -150,7 +173,6 @@ import {
 	CalendarMathMixin,
 } from "vue-simple-calendar" // published version
 import VueSimpleAlert from 'vue-simple-alert'
-import config from '../_helpers/server.config.js'
 import {authHeader} from '../_helpers/auth-header.js'
 import axios from 'axios'
 import Vue from "vue"
@@ -174,6 +196,8 @@ export default {
 			displayPeriodUom: "month",
 			displayWeekNumbers: false,
 			showTimes: true, // display hours for events
+			enableImportExport: false,
+			newItemNotify: false,
 			selectionStart: null,
 			selectionEnd: null,
 			eventSelectionState: false,
@@ -191,6 +215,7 @@ export default {
 			},
 			selectedItemId: 0,
 			items: [],
+			selectedFile: "",
 		}
 	},
 	computed: {
@@ -279,7 +304,7 @@ export default {
 			}
 
 			const request = {
-				url: config.DEFAULT_ROUTE + "/event/getEvents",
+				url: "/event/getEvents",
 				method: 'GET',
 				params : fetchBetween,
 				headers: authHeader()
@@ -312,6 +337,7 @@ export default {
 			this.selectedItemId = i.id
 			this.newItemTitle = i.title
 			this.newItemDescription = i.description
+			this.newItemNotify = i.notify
 
 			this.newItemStartDate = i.startDate.substring(0, 10)
 			this.newItemEndDate = i.endDate.substring(0, 10)
@@ -327,6 +353,7 @@ export default {
 				description: i.description,
 				startDate: newStartDate,
 				endDate: newEndDate,
+				notify: i.notify
 			}
 		},
 		setShowDate(d) { // show message for period changed
@@ -377,11 +404,12 @@ export default {
 					startDate: this.ignoreTimeZoneIssue(newStartDate).toISOString(),
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
+					notify: this.newItemNotify,
 					description: this.newItemDescription
 				}
 
 				const request = {
-					url: config.DEFAULT_ROUTE + "/event/createEvent",
+					url: "/event/createEvent",
 					method: 'POST',
 					data : newEvent,
 					headers: authHeader()
@@ -428,10 +456,11 @@ export default {
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
 					description: this.newItemDescription,
+					notify: this.newItemNotify
 				}
 
 				const request = {
-					url: config.DEFAULT_ROUTE + "/event/modifyEvent",
+					url: "/event/modifyEvent",
 					method: 'POST',
 					data: existingEvent,
 					headers: authHeader()
@@ -492,7 +521,7 @@ export default {
 					}).then((result) => {
 
 						const request = {
-							url: config.DEFAULT_ROUTE + "/event/deleteEvent",
+							url: "/event/deleteEvent",
 							method: 'POST',
 							data: {id: this.selectedItemId},
 							headers: authHeader()
@@ -512,6 +541,81 @@ export default {
 					})
 				}
 			})
+		},
+		fileUpload(e){
+			this.selectedFile = e.target.files[0]
+			this.importIcalFile()
+		},
+		importIcalFile(){
+			const fileName = this.$refs.file.value
+			const extensionStart = fileName.indexOf('.')
+			const extensionEnd = fileName.length
+			const extension = fileName.substring(extensionStart, extensionEnd)
+
+			if (extension != ".ics") {
+				if(fileName == "")
+					return;
+				this.$fire({
+					title: 'File extension not acceptable.',
+					type: 'error',
+					width: 400,
+					timer: 3000
+				})
+				return;
+			} else {
+				const formData = new FormData();
+				formData.append("icalfile", this.selectedFile);
+
+				const request = {
+					url: "/event/importEvent",
+					method: 'POST',
+					data: formData,
+					headers: authHeader()
+				}
+
+				axios(request).then(response => {
+					var imported = response.data;
+					for(let i in imported)
+					{
+						this.items.push(imported[i]);
+					}
+					this.$fire({ 
+							title: 'Import successful',
+							type: 'success',
+							width: 400,
+							timer: 3000})
+
+					this.message = "Import successful"
+				
+				}).catch(error => this.message = JSON.stringify(error.response.data.message))
+			}
+
+			this.$forceUpdate()
+			this.clearFields()
+			this.selectedFile = null;
+		},
+		exportIcalFile(){
+			const request = {
+				url: "/event/exportEvent",
+				method: 'GET',
+				headers: authHeader()
+			}
+
+			axios(request).then((response) => {
+			var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+			var fileLink = document.createElement('a');
+
+			fileLink.href = fileURL;
+			fileLink.setAttribute('download', 'calendar.ics');
+			document.body.appendChild(fileLink);
+
+			fileLink.click();
+			}).catch(error=>this.$fire({ 
+				title: "There is a problem with the server.",
+				type: 'error',
+				width: 400,
+				timer: 3000
+			}).then(this.$router.push('/login')));
 		}
 	}
 }
@@ -558,5 +662,14 @@ body {
 }
 .input-time {
 	width: 75px
+}
+.field-control {
+	display: flex;
+	flex-direction: row;
+	justify-content: space-between;
+}
+.btnContainer {
+	margin-top: 5px;
+	margin-bottom: 10px;
 }
 </style>

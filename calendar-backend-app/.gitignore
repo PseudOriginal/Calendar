@@ -4,5 +4,7 @@ node_modules
 # Default configuration file
 local.server.config.js
 
+service/storage
+
 # Set environment variables
 .env

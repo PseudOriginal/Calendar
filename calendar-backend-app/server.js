@@ -18,33 +18,9 @@ app.use(cors());
 app.use(express.static(path.join(__dirname, "../dist")));
 
 // API routes
-app.get("/", (req, res) => res.send("Hello World!"));
-app.use(
-  "/user",
-  (req, res, next) => {
-    console.log(req.query);
-    console.log(":");
-    console.log(JSON.stringify(req.headers));
-    console.log("-------------------------");
-    console.log(JSON.stringify(req.body));
-    console.log("_________________________________________________________");
-    next();
-  },
-  userRoutes
-);
-app.use(
-  "/event",
-  (req, res, next) => {
-    console.log(req.query);
-    console.log(":");
-    console.log(JSON.stringify(req.headers));
-    console.log("-------------------------");
-    console.log(JSON.stringify(req.body));
-    console.log("_________________________________________________________");
-    next();
-  },
-  eventRoutes
-);
+app.get('/', (req, res) => res.send('Hello World!'))
+app.use('/user', userRoutes); 
+app.use('/event', eventRoutes); 
 
 app.use(
   history({
@@ -56,7 +32,11 @@ app.use(express.static(path.join(__dirname, "../dist")));
 // Global error handler
 app.use(errorHandler);
 
+// Initializing sending of emails for today
+const dailyPostman = require('./emails/emails.js')
+dailyPostman.dailyTask()
+
 // Start server
-const port =
-  process.env.NODE_ENV === "production" ? process.env.PORT || 80 : 4001;
+const port = process.env.NODE_ENV === 'production' ? (process.env.PORT || 80) : 4000;
 app.listen(port, () => console.log(`Start listening on port ${port}`));
+

@@ -339,6 +339,7 @@ export default {
 			this.selectedItemId = i.id
 			this.newItemTitle = i.title
 			this.newItemDescription = i.description
+			this.newItemNotify = i.notify
 
 			this.newItemStartDate = i.startDate.substring(0, 10)
 			this.newItemEndDate = i.endDate.substring(0, 10)
@@ -354,6 +355,7 @@ export default {
 				description: i.description,
 				startDate: newStartDate,
 				endDate: newEndDate,
+				notify: i.notify
 			}
 		},
 		setShowDate(d) { // show message for period changed
@@ -456,6 +458,7 @@ export default {
 					endDate: this.ignoreTimeZoneIssue(newEndDate).toISOString(),
 					title: this.newItemTitle,
 					description: this.newItemDescription,
+					notify: this.newItemNotify
 				}
 
 				const request = {

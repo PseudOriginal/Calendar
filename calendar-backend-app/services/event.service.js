@@ -64,7 +64,7 @@ async function getEvents({ startDate, endDate }, email, checkNotify) {
 }
 
 async function modifyEvent(
-  { id, startDate, endDate, title, description },
+  { id, startDate, endDate, title, description, notify },
   email
 ) {
   let event = await db.Event.findOne({

@@ -105,7 +105,8 @@ async function importEvents(file, email) {
     console.log("File not found");
     return null;
   }
-  const data = icalparser.parseFile(file.path);
+  const rawdata = Buffer.from(file.buffer, "binary").toString();
+  const data = icalparser.parseICS(rawdata);
   var importedEvents = [];
   for (let item in data) {
     if (data.hasOwnProperty(item)) {

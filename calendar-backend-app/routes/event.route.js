@@ -4,7 +4,7 @@ const Joi = require("joi");
 const validateRequest = require("../_middleware/validate-request");
 const authorize = require("../_middleware/authorize");
 const eventService = require("../services/event.service");
-const upload = multer({ dest: "../uploads/" });
+const upload = multer();
 
 const router = express.Router();
 router.post("/createEvent", authorize(), createEventSchema, createEventService);
@@ -104,7 +104,6 @@ function importEventService(req, res, next) {
 function exportEventService(req, res, next) {
   eventService
     .exportEvents(req.user.email)
-    //.then(exportFile => res.download(exportFile, 'calendar.ics'))
     .then((exportFile) => exportFile.serve(res))
     .catch(next);
 }

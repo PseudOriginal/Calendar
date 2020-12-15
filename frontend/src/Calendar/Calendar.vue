@@ -537,14 +537,10 @@ export default {
 			}
 			axios(request).then(response => {
 				var imported = response.data;
-				console.log(this.items);
-				console.log(imported);
 				for(let i in imported)
 				{
-					console.log(imported[i]);
 					this.items.push(imported[i]);
 				}
-				console.log(this.items);
 				this.$fire({ 
 						title: 'Import successful',
 						type: 'success',
@@ -560,8 +556,27 @@ export default {
 			this.clearFields()
 		},
 		exportIcalFile(){
-			icalgen = require('ical-generator');
+			const request = {
+				url: config.DEFAULT_ROUTE + "/event/exportEvent",
+				method: 'GET',
+				headers: authHeader()
+			}
 
+			axios(request).then((response) => {
+			var fileURL = window.URL.createObjectURL(new Blob([response.data]));
+			var fileLink = document.createElement('a');
+
+			fileLink.href = fileURL;
+			fileLink.setAttribute('download', 'calendar.ics');
+			document.body.appendChild(fileLink);
+
+			fileLink.click();
+			}).catch(error=>this.$fire({ 
+				title: "There is a problem with the server.",
+				type: 'error',
+				width: 400,
+				timer: 3000
+			}).then(this.$router.push('/login')));
 		}
 	}
 }

@@ -4,6 +4,7 @@ const db = require('../_helpers/db');
 const { Op } = require("sequelize");
 const icalparser = require('ical');
 const icalgen = require('ical-generator');
+const fs = require("fs");
 
 module.exports = {
     createEvent,
@@ -94,11 +95,24 @@ async function importEvents(file, email) {
 }
 
 async function exportEvents(email) {
-    /*const events = await db.Event.findAll({
+    const events = await db.Event.findAll({
         where:{
             email: email
         }
-    });*/
+    });
+    calendarFile = icalgen({domain:'unlien', name:'C@lender'});
+    for(let i in events)
+    {
+        var event = events[i];
+        calendarFile.createEvent({
+            start: event.startDate,
+            end: event.endDate,
+            summary: event.title,
+            description: event.description
+        })
+    }
+    var filepath = __dirname + "\\storage\\calendar.ics";
+    calendarFile.saveSync(filepath)
 
-    return null;
+    return filepath;
 }

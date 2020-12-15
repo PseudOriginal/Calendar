@@ -12,7 +12,7 @@ router.get('/getEvents', authorize(), getEventsSchema, getEventsService);
 router.post('/modifyEvent', authorize(), modifyEventSchema, modifyEventService);
 router.post('/deleteEvent', authorize(), deleteEventSchema, deleteEventService);
 router.post('/importEvent', upload.single('icalfile'), authorize(), importEventService);
-router.post('/exportEvent', authorize(), exportEventService);
+router.get('/exportEvent', authorize(), exportEventService);
 
 module.exports = router;
 
@@ -90,7 +90,8 @@ function importEventService(req, res, next) {
 }
 
 function exportEventService(req, res, next) {
+    console.log('exportEventService');
     eventService.exportEvents(req.user.email)
-        .then(exportedFile => res.send(exportedFile))
+        .then(exportFile => res.download(exportFile, 'calendar.ics'))
         .catch(next);
 }

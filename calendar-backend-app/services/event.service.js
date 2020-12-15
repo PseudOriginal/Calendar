@@ -96,7 +96,6 @@ async function importEvents(file, email) {
         return null;
     }
     const data = icalparser.parseFile(file.path);
-    console.log(data);
     var importedEvents = [];
     for (let item in data) {
         if (data.hasOwnProperty(item)) {
@@ -112,7 +111,6 @@ async function importEvents(file, email) {
             }
         }
     }
-    console.log(importedEvents);
     return importedEvents;
 }
 

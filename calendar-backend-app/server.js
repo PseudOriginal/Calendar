@@ -19,24 +19,8 @@ app.use(express.static(path.join(__dirname,"../dist")));
 
 // API routes
 app.get('/', (req, res) => res.send('Hello World!'))
-app.use('/user', (req, res, next)=>{
-    console.log(req.query)
-    console.log(':')
-    console.log(JSON.stringify(req.headers))
-    console.log('-------------------------')
-    console.log(JSON.stringify(req.body))
-    console.log('_________________________________________________________')
-    next()
-}, userRoutes); 
-app.use('/event', (req, res, next)=>{
-    console.log(req.query)
-    console.log(':')
-    console.log(JSON.stringify(req.headers))
-    console.log('-------------------------')
-    console.log(JSON.stringify(req.body))
-    console.log('_________________________________________________________')
-    next()
-}, eventRoutes); 
+app.use('/user', userRoutes); 
+app.use('/event', eventRoutes); 
 
 app.use(history({
     verbose: true

@@ -93,6 +93,6 @@ function importEventService(req, res, next) {
 
 function exportEventService(req, res, next) {
     eventService.exportEvents(req.user.email)
-        .then(exportFile => res.download(exportFile, 'calendar.ics'))
+        .then(exportFile => exportFile.serve(res))
         .catch(next);
 }

@@ -95,7 +95,6 @@ async function importEvents(file, email) {
         console.log("File not found")
         return null;
     }
-    console.log(file);
     const rawdata = Buffer.from(file.buffer, 'binary').toString();
     const data = icalparser.parseICS(rawdata);
     var importedEvents = [];
@@ -109,7 +108,6 @@ async function importEvents(file, email) {
 					title: icalevent.summary,
 					description: icalevent.description
                 }
-                console.log(newEvent);
                 importedEvents.push(await createEvent(newEvent, email));
             }
         }
@@ -123,7 +121,7 @@ async function exportEvents(email) {
             email: email
         }
     });
-    calendarFile = icalgen({domain:'unlien', name:'C@lender'});
+    calendarFile = icalgen({domain:'calendarefrei.herokuapp.com', name:'C@lender'});
     for(let i in events)
     {
         var event = events[i];
@@ -134,8 +132,6 @@ async function exportEvents(email) {
             description: event.description
         })
     }
-    var filepath = __dirname + "\\storage\\calendar.ics";
-    calendarFile.saveSync(filepath)
 
-    return filepath;
+    return calendarFile;
 }

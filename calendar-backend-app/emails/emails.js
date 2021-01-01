@@ -33,13 +33,11 @@ var DailyPostman = (module.exports = {
   },
   addDailyMail: async function(event, email) {
     const dates = this.getTodayDates();
-    if (
-      event.notify &&
-      dates[0].getTime() <= event.startDate &&
-      event.startDate <= dates[1].getTime()
-    )
-      if (this.dailyMail[email] == undefined) this.dailyMail[email] = [];
-    this.dailyMail[email].push(event);
+    if (event.notify && dates[0].getTime() <= event.startDate && event.startDate <= dates[1].getTime()){
+			if (this.dailyMail[email] == undefined)
+				this.dailyMail[email] = []
+      this.dailyMail[email].push(event)
+    }
   },
   modifyDailyMail: async function(event, email) {
     const dates = this.getTodayDates();

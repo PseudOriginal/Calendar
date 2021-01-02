@@ -33,10 +33,13 @@ var DailyPostman = (module.exports = {
   },
   addDailyMail: async function(event, email) {
     const dates = this.getTodayDates();
-    if (event.notify && dates[0].getTime() <= event.startDate && event.startDate <= dates[1].getTime()){
-			if (this.dailyMail[email] == undefined)
-				this.dailyMail[email] = []
-      this.dailyMail[email].push(event)
+    if (
+      event.notify &&
+      dates[0].getTime() <= event.startDate &&
+      event.startDate <= dates[1].getTime()
+    ) {
+      if (this.dailyMail[email] == undefined) this.dailyMail[email] = [];
+      this.dailyMail[email].push(event);
     }
   },
   modifyDailyMail: async function(event, email) {
@@ -66,7 +69,7 @@ var DailyPostman = (module.exports = {
   },
   setDailyReminder: async function(email) {
     this.dailyReminders[email] = cron.schedule("*/5 * * * *", () => {
-      events = this.dailyMail[email];
+      const events = this.dailyMail[email];
       events.forEach((event) => {
         const now = new Date();
         const diffMins = Math.round(

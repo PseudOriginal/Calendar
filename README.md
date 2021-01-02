@@ -96,3 +96,5 @@ Ainsi que les fonctionnalités qui ne sont pas vitales pour l’application, mai
 - Demande de rdv
 
 Pour ce qui concerne les limites de notre application, comme cela a été évoqué dans les paragraphes ci-dessus, nous avons pensé à ajouter une fonctionnalité permettant de faire directement les rendez-vous en ligne, et une autre permettant de voir les disponibilités en ligne. Mais, au vu du temps qui nous a été donné pour faire ce projet et des projets à faire en parallèle de celui-ci, nous en avons déduit qu’il serait impossible d’ajouter ces fonctionnalités pour la première version. De même pour les notifications push (les alertes sur le système du téléphone ou de l’ordinateur) qui nous ont paru trop compliquées et peu importantes pour apparaître dans la première version. Mais si ce projet avait continué au-delà de la date fixée par ce cours, ces fonctionnalités auraient alors été implémentées.
+
+----

@@ -6,4 +6,7 @@ describe('Simple Math Test', () => {
  it('should return 9', () => {
         assert.equal(3 * 3, 9);
     });
+ it('should return 9', () => {
+	assert.equal(3 * 4, 9);
+    });
 });

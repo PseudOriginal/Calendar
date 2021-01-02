@@ -7,17 +7,17 @@ const eventService = require("../services/event.service");
 const upload = multer();
 
 const router = express.Router();
-router.post("/createEvent", authorize(), createEventSchema, createEventService);
-router.get("/getEvents", authorize(), getEventsSchema, getEventsService);
-router.post("/modifyEvent", authorize(), modifyEventSchema, modifyEventService);
-router.post("/deleteEvent", authorize(), deleteEventSchema, deleteEventService);
+router.post("/createEvent", authorize, createEventSchema, createEventService);
+router.get("/getEvents", authorize, getEventsSchema, getEventsService);
+router.post("/modifyEvent", authorize, modifyEventSchema, modifyEventService);
+router.post("/deleteEvent", authorize, deleteEventSchema, deleteEventService);
 router.post(
   "/importEvent",
   upload.single("icalfile"),
-  authorize(),
+  authorize,
   importEventService
 );
-router.get("/exportEvent", authorize(), exportEventService);
+router.get("/exportEvent", authorize, exportEventService);
 
 module.exports = router;
 

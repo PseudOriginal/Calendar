@@ -1,5 +1,4 @@
 import config from "config";
-import { authHeader } from "../_helpers";
 
 export const userService = {
   login,
@@ -12,17 +11,17 @@ function login(email, password) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),
+    credentials: "include",
   };
 
   return fetch(`${config.apiUrl}/user/login`, requestOptions)
     .then(handleResponse)
     .then((user) => {
-      // login successful if there's a jwt token in the response
-      if (user.token) {
+      // login successful
+      if (user) {
         // store user details and jwt token in local storage to keep user logged in between page refreshes
         localStorage.setItem("user", JSON.stringify(user));
       }
-
       return user;
     });
 }

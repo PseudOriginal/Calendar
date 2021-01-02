@@ -1,35 +1,32 @@
-import Vue from 'vue';
-import Router from 'vue-router';
+import Vue from "vue";
+import Router from "vue-router";
 
-import HomePage from '../home/HomePage'
-import LoginPage from '../login/LoginPage'
-import RegisterPage from '../register/RegisterPage'
-import Calendar from '../Calendar/Calendar'
+import HomePage from "../home/HomePage";
+import LoginPage from "../login/LoginPage";
+import RegisterPage from "../register/RegisterPage";
+import Calendar from "../Calendar/Calendar";
 
 Vue.use(Router);
 
 export const router = new Router({
-  mode: 'history',
+  mode: "history",
   routes: [
-    { path: '/', component: HomePage },
-    { path: '/login', component: LoginPage },
-    { path: '/register', component: RegisterPage },
-    { path: '/calendar', component: Calendar },
+    { path: "/", component: HomePage },
+    { path: "/login", component: LoginPage },
+    { path: "/register", component: RegisterPage },
+    { path: "/calendar", component: Calendar },
 
     // otherwise redirect to home
-    { path: '*', redirect: '/' }
-  ]
+    { path: "*", redirect: "/" },
+  ],
 });
 
 router.beforeEach((to, from, next) => {
   // redirect to login page if not logged in and trying to access a restricted page
-  const publicPages = ['/login', '/register'];
+  const publicPages = ["/login", "/register"];
   const authRequired = !publicPages.includes(to.path);
-  const loggedIn = localStorage.getItem('user');
+  const loggedIn = localStorage.getItem("user");
 
-  if (authRequired && !loggedIn) {
-    return next('/login');
-  }
-
-  next();
-})
+  if (authRequired && !loggedIn) next("/login");
+  else next();
+});

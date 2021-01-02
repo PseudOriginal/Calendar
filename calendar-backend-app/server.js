@@ -13,6 +13,7 @@ const dotenv = require("dotenv");
 dotenv.config();
 
 const app = express();
+app.disable("x-powered-by");
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cookieParser());

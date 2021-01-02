@@ -1,10 +1,17 @@
 const express = require("express");
 const multer = require("multer");
+const { diskStorage } = require("multer");
 const Joi = require("joi");
 const validateRequest = require("../_middleware/validate-request");
 const authorize = require("../_middleware/authorize");
 const eventService = require("../services/event.service");
-const upload = multer();
+
+const upload = multer({
+  storage: diskStorage,
+  limits: {
+    fileSize: 8000000, // Compliant: 8MB
+  },
+});
 
 const router = express.Router();
 router.post("/createEvent", authorize, createEventSchema, createEventService);

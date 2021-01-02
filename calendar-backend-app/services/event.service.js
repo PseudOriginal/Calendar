@@ -131,7 +131,7 @@ async function exportEvents(email) {
       email: email,
     },
   });
-  calendarFile = icalgen({
+  var calendarFile = icalgen({
     domain: "calendarefrei.herokuapp.com",
     name: "C@lender",
   });

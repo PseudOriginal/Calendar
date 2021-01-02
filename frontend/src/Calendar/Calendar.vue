@@ -261,11 +261,8 @@ export default {
 			let newStartDate = this.newItemStartDate + " " + this.newItemStartTime
 			let newEndDate = this.newItemEndDate + " " + this.newItemEndTime
 
-			if (title == this.newItemTitle && description == this.newItemDescription
+			return !(title == this.newItemTitle && description == this.newItemDescription
 			&& startDate == newStartDate && endDate == newEndDate)
-				return false 
-			else 
-				return true
 		},
 		checkTitle() {
 			if (this.newItemTitle.replace(/\s+/g, '') == "") {
@@ -518,7 +515,7 @@ export default {
 						type: 'success',
 						width: 400,
 						timer: 3000
-					}).then((result) => {
+					}).then(() => {
 
 						const request = {
 							url: "/event/deleteEvent",

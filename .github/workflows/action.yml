@@ -9,4 +9,4 @@ jobs:
     - name: NPM Tests
       uses: anna-money/github-actions-npm@v1
       with:
-        target: 'test'
+        entryPoint: 'test'

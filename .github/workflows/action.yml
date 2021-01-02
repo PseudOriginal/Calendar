@@ -8,3 +8,5 @@ jobs:
     - uses: actions/checkout@v1
     - name: NPM Tests
       uses: anna-money/github-actions-npm@v1
+      with:
+        target: 'test'

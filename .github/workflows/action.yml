@@ -7,7 +7,7 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: NPM Tests
-      uses: anna-money/github-actions-npm@v2
+      run: npm install; npm run test
       env:
         API_KEY: ${{ secrets.API_KEY }}
         DBDATABASE: ${{ secrets.DBDATABASE }}

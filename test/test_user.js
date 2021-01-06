@@ -42,25 +42,56 @@ function createExpress () {
 }
 
 describe('POST /user/register', () => {
+    let agent
+
+    beforeEach(() => agent = createExpress());
 
     after(async () => {
-        let user = await db.User.findOne({
-            where: {
-                email: 'john.smithtest@gmail.com'
-            },
-        });
+        let user = await db.User.findOne({ where: { email: 'registerUser@gmail.com' } });
         await user.destroy();
     })
 
-    it('should successfully create the user john.smithtest@gmail.com', async () => {
-        const agent = createExpress()
-        await agent
+    it('should successfully create the user registerUser@gmail.com', () => {
+        return agent
             .post('/user/register')
-            .send({ email: 'john.smithtest@gmail.com', password: 'testSecret' })
+            .send({ email: 'registerUser@gmail.com', password: 'testSecret' })
             .expect('Content-Type', /json/)
             .expect(200)
             .then((response) => {
                 expect(response.body.message).to.equal('Registration successful')
+            })
+    })
+
+    it('should fail to create an already existing user', () => {
+        return agent
+        .post('/user/register')
+        .send({ email: 'registerUser@gmail.com', password: 'otherTestSecret' })
+        .expect('Content-Type', /json/)
+        .expect(400)
+        .then((response) => {
+            expect(response.body.message).to.equal('registerUser@gmail.com is already taken')
+        })
+    })
+
+    it('should fail to create a user with a password of length < 6', () => {
+        return agent
+            .post('/user/register')
+            .send({ email: 'registerUser2@gmail.com', password: 'hello' })
+            .expect('Content-Type', /json/)
+            .expect(400)
+            .then((response) => {
+                expect(response.body.message).to.equal('Validation error: \"password\" length must be at least 6 characters long')
+            })
+    })
+
+    it('should fail to create a user with an invalid email', () => {
+        return agent
+            .post('/user/register')
+            .send({ email: 'registerUser3gmail.com', password: 'testSecret2' })
+            .expect('Content-Type', /json/)
+            .expect(400)
+            .then((response) => {
+                expect(response.body.message).to.equal('Validation error: \"email\" must be a valid email')
             })
     })
 

@@ -96,3 +96,50 @@ describe('POST /user/register', () => {
     })
 
 })
+
+describe('GET /user', () => {
+    let agent
+
+    beforeEach(() => agent = createExpress());
+
+    after(async () => {
+        let user = await db.User.findOne({ where: { email: 'getUser@gmail.com' } });
+        await user.destroy();
+    })
+
+    it('should fail to get the current user if not logged in', () => {
+        return agent
+            .get('/user')
+            .expect('Content-Type', /json/)
+            .expect(401)
+            .then((response) => {
+                expect(response.body.message).to.equal('Unauthorized')
+            })
+    })
+
+    it('should manage to get the current user\'s email address if logged in', async () => {
+        await agent
+            .post('/user/register')
+            .send({ email: 'getUser@gmail.com', password: 'testSecret' })
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.message).to.equal('Registration successful')
+            })
+        await agent
+            .post('/user/login')
+            .send({ email: 'getUser@gmail.com', password: 'testSecret' })
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.email).to.equal('getUser@gmail.com')
+            })
+        return agent
+            .get('/user')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.email).to.equal('getUser@gmail.com')
+            })
+    })
+})

@@ -26,5 +26,4 @@ jobs:
         dbSecret: ${{ secrets.DBSECRET }}
         dbUser: ${{ secrets.DBUSER }}        
         DOMAIN: ${{ secrets.DOMAIN }}
-        WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
       run: npm install; npm run test

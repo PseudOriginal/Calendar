@@ -115,7 +115,6 @@ describe("POST /event/modifyEvent", () => {
   after(async () => {
     db.Event.destroy({
       where: { email },
-      truncate: true,
     });
     let user = await db.User.findByPk(email);
     await user.destroy();
@@ -190,6 +189,60 @@ describe("POST /event/modifyEvent", () => {
       .then((response) => {
         expect(response.body.message).to.equal(
           'Validation error: "title" is not allowed to be empty'
+        );
+      });
+  });
+});
+
+describe("POST /event/deleteEvent", () => {
+  const agent = createExpress();
+  const email = "deleteEvent.test@gmail.com";
+  let event = {
+    startDate: "2020-12-27T00:00:00.000Z",
+    endDate: "2020-12-27T23:59:00.000Z",
+    title: "Hello world",
+    description: "",
+    notify: false,
+  };
+
+  before(async () => {
+    await agent.post("/user/register").send({ email, password: "testSecret" });
+  });
+
+  after(async () => {
+    db.Event.destroy({
+      where: { email },
+    });
+    let user = await db.User.findByPk(email);
+    await user.destroy();
+  });
+
+  it("should fail to delete an event if not logged in", async () => {
+    return agent
+      .post("/event/deleteEvent")
+      .send({ id: 1 })
+      .expect("Content-Type", /json/)
+      .expect(401)
+      .then((response) => {
+        expect(response.body.message).to.equal("Unauthorized");
+      });
+  });
+
+  it("should successfully delete an event if logged in", async () => {
+    await agent.post("/user/login").send({ email, password: "testSecret" });
+    await agent.post("/event/createEvent").send(event, email);
+
+    let eventDB = await db.Event.findOne({
+      where: { email },
+    });
+    return await agent
+      .post("/event/deleteEvent")
+      .send({ id: eventDB.id })
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then((response) => {
+        expect(response.body.message).to.equal(
+          `Event ${eventDB.id} successfully deleted`
         );
       });
   });

@@ -103,7 +103,9 @@ function modifyEventService(req, res, next) {
 function deleteEventService(req, res, next) {
   eventService
     .deleteEvent(req.body, req.user.email)
-    .then((deleted) => res.json(deleted))
+    .then((event) =>
+      res.json({ message: `Event ${event.id} successfully deleted` })
+    )
     .catch(next);
 }
 

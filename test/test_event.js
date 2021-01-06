@@ -11,18 +11,6 @@ const userRoutes = require("../calendar-backend-app/routes/user.route");
 const eventRoutes = require("../calendar-backend-app/routes/event.route");
 const db = require("../calendar-backend-app/_helpers/db");
 
-function parseCookies (request) {
-    var list = {},
-        rc = request.headers.cookie;
-
-    rc && rc.split(';').forEach(function( cookie ) {
-        var parts = cookie.split('=');
-        list[parts.shift().trim()] = decodeURI(parts.join('='));
-    });
-
-    return list;
-}
-
 function createExpress () {
     const dotenv = require("dotenv");
     dotenv.config();
@@ -56,9 +44,8 @@ describe('POST /event/createEvent', () => {
     const agent = createExpress();
 
     after(async () => {
-        db.Event.destroy({
-            where: {email:'createEvent.test@gmail.com'},
-            truncate: true
+        await db.Event.destroy({
+            where: {email:'createEvent.test@gmail.com'}
           })
         let user = await db.User.findByPk('createEvent.test@gmail.com');
         await user.destroy();
@@ -79,7 +66,6 @@ describe('POST /event/createEvent', () => {
                 expect(response.body.message).to.equal('Unauthorized')
             })
     })
-
     it('should successfully create an event for the user createEvent.test@gmail.com', async () => {
         await agent
             .post('/user/register')
@@ -87,7 +73,7 @@ describe('POST /event/createEvent', () => {
         await agent
             .post('/user/login')
             .send({email : 'createEvent.test@gmail.com', password: 'testSecret' })
-        return await agent
+        await agent
             .post('/event/createEvent')
             .send({
                 startDate : '2020-12-27T00:00:00.000Z', 

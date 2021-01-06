@@ -45,7 +45,6 @@ function getEventsSchema(req, res, next) {
   const schema = Joi.object({
     startDate: Joi.date().required(),
     endDate: Joi.date()
-      .timestamp()
       .greater(Joi.ref("startDate"))
       .required(),
   });
@@ -54,7 +53,7 @@ function getEventsSchema(req, res, next) {
   if (error) {
     next(`Validation error: ${error.details.map((x) => x.message).join(", ")}`);
   } else {
-    req.quary = value;
+    req.query = value;
     next();
   }
 }
@@ -64,7 +63,6 @@ function modifyEventSchema(req, res, next) {
     id: Joi.number().required(),
     startDate: Joi.date().required(),
     endDate: Joi.date()
-      .timestamp()
       .greater(Joi.ref("startDate"))
       .required(),
     title: Joi.string().required(),

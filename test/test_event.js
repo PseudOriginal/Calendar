@@ -55,14 +55,6 @@ function createExpress () {
 describe('POST /event/createEvent', () => {
     const agent = createExpress();
 
-    before(async () => {
-        await agent
-            .post('/user/register')
-            .send({ email: 'createEvent.test@gmail.com', password: 'testSecret' })
-        await agent.post('/user/login')
-            .send({email : 'createEvent.test@gmail.com', password: 'testSecret' })
-    })
-
     after(async () => {
         db.Event.destroy({
             where: {email:'createEvent.test@gmail.com'},
@@ -72,8 +64,31 @@ describe('POST /event/createEvent', () => {
         await user.destroy();
     })
 
-    it('should successfully create an event for the user createEvent.test@gmail.com', async () => {
+    it('should not be able to create an event if disconnected', async () => {
         return agent.post('/event/createEvent')
+            .send({
+                startDate : '2020-12-27T00:00:00.000Z', 
+                endDate: '2020-12-27T23:59:00.000Z',
+                title: 'Hello world',
+                description: '',
+                notify: false
+            })
+            .expect('Content-Type', /json/)
+            .expect(401)
+            .then((response) => {
+                expect(response.body.message).to.equal('Unauthorized')
+            })
+    })
+
+    it('should successfully create an event for the user createEvent.test@gmail.com', async () => {
+        await agent
+            .post('/user/register')
+            .send({ email: 'createEvent.test@gmail.com', password: 'testSecret' })
+        await agent
+            .post('/user/login')
+            .send({email : 'createEvent.test@gmail.com', password: 'testSecret' })
+        return await agent
+            .post('/event/createEvent')
             .send({
                 startDate : '2020-12-27T00:00:00.000Z', 
                 endDate: '2020-12-27T23:59:00.000Z',
@@ -93,5 +108,4 @@ describe('POST /event/createEvent', () => {
                 expect(response.body.email).to.equal('createEvent.test@gmail.com')
             })
     })
-
 })

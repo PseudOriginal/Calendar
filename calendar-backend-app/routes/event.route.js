@@ -32,7 +32,6 @@ function createEventSchema(req, res, next) {
   const schema = Joi.object({
     startDate: Joi.date().required(),
     endDate: Joi.date()
-      .timestamp()
       .greater(Joi.ref("startDate"))
       .required(),
     title: Joi.string().required(),

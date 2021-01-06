@@ -32,7 +32,6 @@ function createEventSchema(req, res, next) {
   const schema = Joi.object({
     startDate: Joi.date().required(),
     endDate: Joi.date()
-      .timestamp()
       .greater(Joi.ref("startDate"))
       .required(),
     title: Joi.string().required(),
@@ -46,7 +45,6 @@ function getEventsSchema(req, res, next) {
   const schema = Joi.object({
     startDate: Joi.date().required(),
     endDate: Joi.date()
-      .timestamp()
       .greater(Joi.ref("startDate"))
       .required(),
   });
@@ -65,7 +63,6 @@ function modifyEventSchema(req, res, next) {
     id: Joi.number().required(),
     startDate: Joi.date().required(),
     endDate: Joi.date()
-      .timestamp()
       .greater(Joi.ref("startDate"))
       .required(),
     title: Joi.string().required(),

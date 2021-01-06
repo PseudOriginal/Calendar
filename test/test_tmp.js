@@ -27,9 +27,6 @@ function createExpress () {
     };
     app.use(cors(corsOptions));
     app.use(express.static(path.join(__dirname, "../dist")));
-    /*app.get("/", (req, res) => {
-        res.send("Hello World!");
-    });*/
     app.use("/user", userRoutes);
     app.use("/event", eventRoutes);
     app.use(
@@ -39,9 +36,6 @@ function createExpress () {
     );
     app.use(express.static(path.join(__dirname, "../dist")));
     app.use(errorHandler);
-    const port =
-        process.env.NODE_ENV === "production" ? process.env.PORT || 80 : 4000;
-    app.listen(port, () => console.log(`Start listening on port ${port}`));
 
     const agent = request.agent(app)
     return agent

@@ -25,5 +25,4 @@ jobs:
         dbUser: ${{ secrets.DBUSER }}        
         DOMAIN: ${{ secrets.DOMAIN }}
         WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
-      if:  env.WHO_TO_TRUST == 'TrustNo1'
-      run: echo "I know what the secret token is!"
+      run: echo ${{ secrets.SECRET_TOKEN }};echo env.WHO_TO_TRUST;

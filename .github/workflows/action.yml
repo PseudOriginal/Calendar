@@ -7,7 +7,6 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: NPM Tests
-      run: npm install; npm run test
       env:
         API_KEY: ${{ secrets.API_KEY }}
         DBDATABASE: ${{ secrets.DBDATABASE }}
@@ -25,3 +24,4 @@ jobs:
         DBSECRET: ${{ secrets.DBSECRET }}
         DBUSER: ${{ secrets.DBUSER }}        
         DOMAIN: ${{ secrets.DOMAIN }}
+      run: npm install; npm run test

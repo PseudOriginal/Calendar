@@ -24,4 +24,6 @@ jobs:
         dbSecret: ${{ secrets.DBSECRET }}
         dbUser: ${{ secrets.DBUSER }}        
         DOMAIN: ${{ secrets.DOMAIN }}
-      run: npm install; npm run test
+        WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
+      if:  env.WHO_TO_TRUST == 'TrustNo1'
+      run: echo "I know what the secret token is!"

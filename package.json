@@ -12,7 +12,7 @@
     "start:server": "nodemon ./calendar-backend-app/server.js",
     "start:client": "webpack-dev-server --open --context frontend --config frontend/webpack.config.dev.js",
     "build": "webpack --context frontend --config frontend/webpack.config.prod.js --mode development",
-    "test": "mocha"
+    "test": "mocha --timeout 15000"
   },
   "keywords": [
     "nodejs",

@@ -96,3 +96,101 @@ describe("POST /event/createEvent", () => {
       });
   });
 });
+
+describe("POST /event/modifyEvent", () => {
+  const agent = createExpress();
+  const email = "modifyEvent.test@gmail.com";
+  let event = {
+    startDate: "2020-12-27T00:00:00.000Z",
+    endDate: "2020-12-27T23:59:00.000Z",
+    title: "Hello world",
+    description: "",
+    notify: false,
+  };
+
+  before(async () => {
+    await agent.post("/user/register").send({ email, password: "testSecret" });
+  });
+
+  after(async () => {
+    db.Event.destroy({
+      where: { email },
+      truncate: true,
+    });
+    let user = await db.User.findByPk(email);
+    await user.destroy();
+  });
+
+  it("should fail to modify an event if not logged in", async () => {
+    return agent
+      .post("/event/modifyEvent")
+      .send(event)
+      .expect("Content-Type", /json/)
+      .expect(401)
+      .then((response) => {
+        expect(response.body.message).to.equal("Unauthorized");
+      });
+  });
+
+  it("should successfully modify an event if logged in", async () => {
+    await agent.post("/user/login").send({ email, password: "testSecret" });
+    await agent.post("/event/createEvent").send(event, email);
+
+    let eventDB = await db.Event.findOne({
+      where: { email },
+    });
+    event.id = eventDB.id;
+    event.description = "123";
+    return await agent
+      .post("/event/modifyEvent")
+      .send(event)
+      .expect("Content-Type", /json/)
+      .expect(200)
+      .then((response) => {
+        expect(response.body.id).to.equal(eventDB.id);
+        expect(response.body.startDate).to.equal("2020-12-27T00:00:00.000Z");
+        expect(response.body.endDate).to.equal("2020-12-27T23:59:00.000Z");
+        expect(response.body.title).to.equal("Hello world");
+        expect(response.body.notify).to.equal(false);
+        expect(response.body.description).to.equal("123");
+        expect(response.body.email).to.equal("modifyEvent.test@gmail.com");
+      });
+  });
+
+  it("should fail to modify an event if startDate is greater than endDate", async () => {
+    let eventDB = await db.Event.findOne({
+      where: { email },
+    });
+    event.id = eventDB.id;
+    event.endDate = "2020-12-26T23:59:00.000Z";
+    return await agent
+      .post("/event/modifyEvent")
+      .send(event)
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).to.equal(
+          'Validation error: "endDate" must be greater than "ref:startDate"'
+        );
+      });
+  });
+
+  it("should fail to modify an event if title is empty", async () => {
+    let eventDB = await db.Event.findOne({
+      where: { email },
+    });
+    event.id = eventDB.id;
+    event.endDate = "2020-12-27T23:59:00.000Z";
+    event.title = "";
+    return await agent
+      .post("/event/modifyEvent")
+      .send(event)
+      .expect("Content-Type", /json/)
+      .expect(400)
+      .then((response) => {
+        expect(response.body.message).to.equal(
+          'Validation error: "title" is not allowed to be empty'
+        );
+      });
+  });
+});

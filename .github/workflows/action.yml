@@ -4,6 +4,8 @@ jobs:
   runNpmTarget:
     name: Run NPM target
     runs-on: ubuntu-latest
+    environment: 
+      name: calendarefrei
     steps:
     - uses: actions/checkout@v1
     - name: NPM Tests
@@ -25,4 +27,4 @@ jobs:
         dbUser: ${{ secrets.DBUSER }}        
         DOMAIN: ${{ secrets.DOMAIN }}
         WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
-      run: echo ${{ secrets.SECRET_TOKEN }};echo env.WHO_TO_TRUST;
+      run: npm install; npm run test

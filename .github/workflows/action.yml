@@ -4,24 +4,27 @@ jobs:
   runNpmTarget:
     name: Run NPM target
     runs-on: ubuntu-latest
+    environment: 
+      name: calendarefrei
     steps:
     - uses: actions/checkout@v1
     - name: NPM Tests
-      uses: anna-money/github-actions-npm@v2
-    env:
+      env:
         API_KEY: ${{ secrets.API_KEY }}
-        DBDATABASE: ${{ secrets.DBDATABASE }}
-        DBOPTIONSDEFINECONNECTTIMEOUT: ${{ secrets.DBOPTIONSDEFINECONNECTTIMEOUT }}
-        DBOPTIONSDEFINEFREEZETABLENAME: ${{ secrets.DBOPTIONSDEFINEFREEZETABLENAME }}
-        DBOPTIONSDEFINEOPERATORSALIASES: ${{ secrets.DBOPTIONSDEFINEOPERATORSALIASES }}
-        DBOPTIONSDEFINEPOOLACQUIRE: ${{ secrets.DBOPTIONSDEFINEPOOLACQUIRE }}
-        DBOPTIONSDEFINEPOOLIDLE: ${{ secrets.DBOPTIONSDEFINEPOOLIDLE }}
-        DBOPTIONSDEFINEPOOLMAX: ${{ secrets.DBOPTIONSDEFINEPOOLMAX }}
-        DBOPTIONSDEFINEPOOLMIN: ${{ secrets.DBOPTIONSDEFINEPOOLMIN }}
-        DBOPTIONSDIALECT: ${{ secrets.DBOPTIONSDIALECT }}
-        DBOPTIONSHOST: ${{ secrets.DBOPTIONSHOST }}
-        DBOPTIONSPORT: ${{ secrets.DBOPTIONSPORT }}
-        DBPASSWORD: ${{ secrets.DBPASSWORD }}
-        DBSECRET: ${{ secrets.DBSECRET }}
-        DBUSER: ${{ secrets.DBUSER }}        
+        dbDatabase: ${{ secrets.DBDATABASE }}
+        dbOptionsDefineConnectTimeout: ${{ secrets.DBOPTIONSDEFINECONNECTTIMEOUT }}
+        dbOptionsDefineFreezeTableName: ${{ secrets.DBOPTIONSDEFINEFREEZETABLENAME }}
+        dbOptionsDefineOperatorsAliases: ${{ secrets.DBOPTIONSDEFINEOPERATORSALIASES }}
+        dbOptionsDefinePoolAcquire: ${{ secrets.DBOPTIONSDEFINEPOOLACQUIRE }}
+        dbOptionsDefinePoolIdle: ${{ secrets.DBOPTIONSDEFINEPOOLIDLE }}
+        dbOptionsDefinePoolMax: ${{ secrets.DBOPTIONSDEFINEPOOLMAX }}
+        dbOptionsDefinePoolMin: ${{ secrets.DBOPTIONSDEFINEPOOLMIN }}
+        dbOptionsDialect: ${{ secrets.DBOPTIONSDIALECT }}
+        dbOptionsHost: ${{ secrets.DBOPTIONSHOST }}
+        dbOptionsPort: ${{ secrets.DBOPTIONSPORT }}
+        dbPassword: ${{ secrets.DBPASSWORD }}
+        dbSecret: ${{ secrets.DBSECRET }}
+        dbUser: ${{ secrets.DBUSER }}        
         DOMAIN: ${{ secrets.DOMAIN }}
+        WHO_TO_TRUST: ${{ secrets.SECRET_TOKEN }}
+      run: npm install; npm run test

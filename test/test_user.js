@@ -156,7 +156,6 @@ describe("POST /user/login", () => {
   beforeEach(() => (agent = createExpress()));
 
   it("should successfully login if user alex@gmail.com exists", async () => {
-    const agent = createExpress();
     await agent
       .post("/user/login")
       .send({ email: "alex@gmail.com", password: "123456" })
@@ -168,7 +167,6 @@ describe("POST /user/login", () => {
   });
 
   it("should fail if user john.smithtest@gmail.com does not exist", async () => {
-    const agent = createExpress();
     await agent
       .post("/user/login")
       .send({ email: "john.smithtest@gmail.com", password: "testSecret" })
@@ -182,7 +180,6 @@ describe("POST /user/login", () => {
   });
 
   it("should fail if email and/or password is empty", async () => {
-    const agent = createExpress();
     await agent
       .post("/user/login")
       .send({ email: "", password: "" })

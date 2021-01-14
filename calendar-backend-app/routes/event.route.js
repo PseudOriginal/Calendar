@@ -53,7 +53,7 @@ function getEventsSchema(req, res, next) {
   if (error) {
     next(`Validation error: ${error.details.map((x) => x.message).join(", ")}`);
   } else {
-    req.quary = value;
+    req.query = value;
     next();
   }
 }
@@ -103,7 +103,9 @@ function modifyEventService(req, res, next) {
 function deleteEventService(req, res, next) {
   eventService
     .deleteEvent(req.body, req.user.email)
-    .then((deleted) => res.json(deleted))
+    .then((event) =>
+      res.json({ message: `Event ${event.id} successfully deleted` })
+    )
     .catch(next);
 }
 

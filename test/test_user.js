@@ -163,7 +163,7 @@ describe("POST /user/login", () => {
       .expect("Content-Type", /json/)
       .expect(200)
       .then((response) => {
-        expect(response.text).to.equal('{"email":"alex@gmail.com"}');
+        expect(response.body.email).to.equal("alex@gmail.com");
       });
   });
 

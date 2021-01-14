@@ -12,7 +12,7 @@
     "start:server": "nodemon ./calendar-backend-app/server.js",
     "start:client": "webpack-dev-server --open --context frontend --config frontend/webpack.config.dev.js",
     "build": "webpack --context frontend --config frontend/webpack.config.prod.js --mode development",
-    "test": "mocha"
+    "test": "mocha --exit --timeout 10000"
   },
   "keywords": [
     "nodejs",
@@ -24,6 +24,7 @@
     "axios": "^0.21.0",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
     "config-yml": "^0.10.3",
     "connect-history-api-fallback": "^1.6.0",
     "cookie-parser": "^1.4.5",
@@ -44,6 +45,7 @@
     "rootpath": "^0.1.2",
     "sequelize": "^6.3.5",
     "style-loader": "^2.0.0",
+    "supertest": "^6.0.1",
     "vee-validate": "^2.2.8",
     "vue": "^2.6.10",
     "vue-router": "^3.1.3",

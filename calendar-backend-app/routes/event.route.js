@@ -31,7 +31,9 @@ module.exports = router;
 function createEventSchema(req, res, next) {
   const schema = Joi.object({
     startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    endDate: Joi.date()
+      .greater(Joi.ref("startDate"))
+      .required(),
     title: Joi.string().required(),
     notify: Joi.boolean().required(),
     description: Joi.string().allow(""),
@@ -42,14 +44,16 @@ function createEventSchema(req, res, next) {
 function getEventsSchema(req, res, next) {
   const schema = Joi.object({
     startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    endDate: Joi.date()
+      .greater(Joi.ref("startDate"))
+      .required(),
   });
   const { error, value } = schema.validate(req.query);
 
   if (error) {
     next(`Validation error: ${error.details.map((x) => x.message).join(", ")}`);
   } else {
-    req.quary = value;
+    req.query = value;
     next();
   }
 }
@@ -58,7 +62,9 @@ function modifyEventSchema(req, res, next) {
   const schema = Joi.object({
     id: Joi.number().required(),
     startDate: Joi.date().required(),
-    endDate: Joi.date().required(),
+    endDate: Joi.date()
+      .greater(Joi.ref("startDate"))
+      .required(),
     title: Joi.string().required(),
     notify: Joi.boolean().required(),
     description: Joi.string().allow(""),
@@ -97,7 +103,9 @@ function modifyEventService(req, res, next) {
 function deleteEventService(req, res, next) {
   eventService
     .deleteEvent(req.body, req.user.email)
-    .then((deleted) => res.json(deleted))
+    .then((event) =>
+      res.json({ message: `Event ${event.id} successfully deleted` })
+    )
     .catch(next);
 }
 

@@ -96,8 +96,8 @@ async function deleteEvent({ id }, email) {
     },
   });
 
-  if (await event.destroy()) return true;
-  return false;
+  if (await event.destroy()) return event;
+  return null;
 }
 
 async function importEvents(file, email) {

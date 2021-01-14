@@ -20,7 +20,7 @@ function createExpress() {
   app.use(bodyParser.json());
   app.use(cookieParser());
   var corsOptions = {
-    origin: ["http://localhost:4000", "http://calendarefrei.herokuapp.com"],
+    origin: ["http://localhost:4000", "https://calendarefrei.herokuapp.com"],
     optionsSuccessStatus: 200,
     credentials: true,
   };

@@ -247,3 +247,125 @@ describe("POST /event/deleteEvent", () => {
       });
   });
 });
+
+describe('GET event/getEvents', () => {
+    let agent;
+  
+    beforeEach(() => agent = createExpress());
+  
+    after(async () => {
+      let event1 = await db.Event.findOne({ where: { title: 'Hello World', email:'getEvents@gmail.com' } });
+      await event1.destroy();
+      let event2 = await db.Event.findOne({ where: { title: 'Hello Wowld', email:'getEvents@gmail.com' } });
+      await event2.destroy();
+      let user = await db.User.findOne({ where: { email: 'getEvents@gmail.com' } });
+      await user.destroy();
+    });
+
+    it('should not crash when getting events in the given period and there are none', async () => {
+        await agent
+            .post('/user/register')
+            .send({ email: 'getEvents@gmail.com', password: 'testSecret' })
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.message).to.equal('Registration successful')
+            });
+        await agent
+            .post('/user/login')
+            .send({ email: 'getEvents@gmail.com', password: 'testSecret' })
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.email).to.equal('getEvents@gmail.com')
+            });
+        return agent
+            .get('/event/getEvents?startDate=2020-12-26T00:00:00.000Z&endDate=2020-12-28T00:00:00.000Z')
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body).to.be.an('array').of.length(0)
+            });
+    });
+  
+    it('should successfully get events in the given period', async () => {
+      await agent
+          .post('/user/login')
+          .send({ email: 'getEvents@gmail.com', password: 'testSecret' })
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then((response) => {
+              expect(response.body.email).to.equal('getEvents@gmail.com')
+          });
+      await agent
+          .post('/event/createEvent')
+          .send({ startDate: '2020-12-27T00:00:00.000Z', endDate: '2020-12-27T00:23:59.000Z', title: 'Hello World', description: '', notify: false })
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then((response) => {
+              expect(response.body.id).to.be.a("number");
+              expect(response.body.startDate).to.equal('2020-12-27T00:00:00.000Z')
+              expect(response.body.endDate).to.equal('2020-12-27T00:23:59.000Z')
+              expect(response.body.title).to.equal('Hello World')
+              expect(response.body.notify).to.equal(false)
+              expect(response.body.description).to.equal('')
+              expect(response.body.email).to.equal('getEvents@gmail.com')
+          });
+      await agent
+          .post('/event/createEvent')
+          .send({ startDate: '2019-12-27T00:00:00.000Z', endDate: '2019-12-27T00:23:59.000Z', title: 'Hello Wowld', description: '', notify: false })
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then((response) => {
+              expect(response.body.id).to.be.a("number");
+              expect(response.body.startDate).to.equal('2019-12-27T00:00:00.000Z')
+              expect(response.body.endDate).to.equal('2019-12-27T00:23:59.000Z')
+              expect(response.body.title).to.equal('Hello Wowld')
+              expect(response.body.notify).to.equal(false)
+              expect(response.body.description).to.equal('')
+              expect(response.body.email).to.equal('getEvents@gmail.com')
+          });
+      return agent
+          .get('/event/getEvents?startDate=2020-12-26T00:00:00.000Z&endDate=2020-12-28T00:00:00.000Z')
+          .expect('Content-Type', /json/)
+          .expect(200)
+          .then((response) => {
+              expect(response.body).to.be.an('array').of.length(1)
+              expect(response.body[0].id).to.be.a("number");
+              expect(response.body[0].startDate).to.equal('2020-12-27T00:00:00.000Z')
+              expect(response.body[0].endDate).to.equal('2020-12-27T00:23:59.000Z')
+              expect(response.body[0].title).to.equal('Hello World')
+              expect(response.body[0].notify).to.equal(false)
+              expect(response.body[0].description).to.equal('')
+              expect(response.body[0].email).to.equal('getEvents@gmail.com')
+          });
+    });
+
+    it('should fail to get events if the start of the given period is after the end', async () => {
+        await agent
+            .post('/user/login')
+            .send({ email: 'getEvents@gmail.com', password: 'testSecret' })
+            .expect('Content-Type', /json/)
+            .expect(200)
+            .then((response) => {
+                expect(response.body.email).to.equal('getEvents@gmail.com')
+            });
+        return agent
+            .get('/event/getEvents?startDate=2020-12-28T00:00:00.000Z&endDate=2020-12-26T00:00:00.000Z')
+            .expect('Content-Type', /json/)
+            .expect(400)
+            .then((response) => {
+                expect(response.body.message).to.equal('Validation error: "endDate" must be greater than "ref:startDate"')
+            });
+    });
+
+    it('should fail to get events in the given period if not authenticated', async () => {
+        return agent
+            .get('/event/getEvents?startDate=2020-12-26T00:00:00.000Z&endDate=2020-12-28T00:00:00.000Z')
+            .expect('Content-Type', /json/)
+            .expect(401)
+            .then((response) => {
+                expect(response.body.message).to.equal('Unauthorized')
+            });
+    });
+});
